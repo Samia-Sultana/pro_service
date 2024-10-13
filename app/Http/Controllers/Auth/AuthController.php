@@ -15,7 +15,6 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
     public function register(Request $request){
-        info('hi');
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required',
@@ -28,13 +27,15 @@ class AuthController extends Controller
             $validator->validated(),
             ['password' => bcrypt($request->password)]
         ));
-        return response()->json([
-            'message' => 'User created successfully',
-            'user' => $user
-        ]);
+
+        if(!$token = Auth::attempt($validator->validated())){
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        return $this->createNewToken($token);
+
+
     }
     public function login(Request $request){
-        info($request);
 
         $validator = Validator::make($request->all(), [
             'email' => 'required',
@@ -54,7 +55,6 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60 ,
-            'user' => auth()->user()
         ]);
 
     }
