@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Interfaces\Admin\AdminServiceInterface;
 use Illuminate\Http\Request;
+use Validator;
 
 class AdminController extends Controller
 {
@@ -22,5 +23,30 @@ class AdminController extends Controller
             'message' => 'Data retrieved successfully',
             'data' => $data
         ]);
+    }
+
+    public function store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:8',
+            'email' => 'required|email|unique:users,email',
+            'password' => [
+                'required',
+                'regex:/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/'
+            ],
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'status' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]);
+        }
+        $data = $this->adminService->store($validator->validated());
+        return response()->json([
+            'status' => 200,
+            'message' => 'Admin created successfully',
+            'data' => $data
+        ]);
+
     }
 }

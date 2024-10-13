@@ -14,13 +14,19 @@ class AdminService implements AdminServiceInterface
     }
     public function index()
     {
-        info('hhhhhhhhhhh');
         $query  = $this->userModel->query();
         return $query->paginate(10);
     }
     public function store(array $data)
     {
-        // Logic to store a new admin
+        $query  = $this->userModel->query();
+        $admin = $query->create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+        ]);
+        return $admin;
+
     }
 
     public function adminDetail($id)
