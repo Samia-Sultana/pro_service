@@ -9,7 +9,7 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('/admin/store', [AdminController::class, 'store'])->name('admin.store');
     Route::get('/admin/{id}', [AdminController::class, 'adminDetail'])->name('admin.detail');
     Route::post('/admin/edit', [AdminController::class, 'edit'])->name('admin.edit');
-    Route::post('/admin/delete', [AdminController::class, 'destroy'])->name('admin.destroy');
+    Route::delete('/admin/delete/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
 });
 
 

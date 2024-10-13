@@ -31,6 +31,9 @@ class AdminService implements AdminServiceInterface
 
     public function adminDetail($id)
     {
+        $query  = $this->userModel->query();
+        $admin = $query->findOrFail($id);
+        return $admin;
 
     }
 
@@ -41,7 +44,12 @@ class AdminService implements AdminServiceInterface
 
     public function destroy($id)
     {
-
+        $query  = $this->userModel->query();
+        $admin = $query->find($id);
+        if ($admin) {
+            return $admin->delete();
+        }
+        return false;
     }
 
 
