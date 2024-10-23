@@ -29,9 +29,9 @@ class PermissionService implements PermissionServiceInterface
     public function destroy($id)
     {
         $query  = $this->permissionModel->query();
-        $admin = $query->find($id);
-        if ($admin) {
-            return $admin->delete();
+        $permission = $query->find($id);
+        if ($permission) {
+            return $permission->delete();
         }
         return false;
     }

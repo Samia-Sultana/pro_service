@@ -26,7 +26,18 @@ class PermissionController extends Controller
 
 
     public function destroy($id){
-
+        $deleted = $this->permissionService->destroy($id);
+        if ($deleted) {
+            return response()->json([
+            'status' => 200,
+            'message' => 'permission deleted successfully',
+            ]);
+        } else {
+            return response()->json([
+            'status' => 404,
+            'message' => 'permission not found',
+            ], 404);
+        }
 
     }
 
