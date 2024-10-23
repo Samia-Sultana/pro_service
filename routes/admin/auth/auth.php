@@ -2,9 +2,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\Auth\AuthController;
 
-info('auth.php file has been loaded.');
 
 Route::prefix('auth')->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
