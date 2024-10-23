@@ -14,12 +14,11 @@ class RoleService implements RoleServiceInterface
     }
     public function index()
     {
-        $query  = $this->roleModel->query();
+        $query  = $this->roleModel->with('permissions');
         return $query->paginate(10);
     }
     public function store(array $data)
     {
-        info('lasdjsk');
         $query  = $this->roleModel->query();
         $role = $query->create([
             'name' => $data['name'],
@@ -39,7 +38,12 @@ class RoleService implements RoleServiceInterface
 
     public function edit(array $data)
     {
-
+        $query  = $this->roleModel->query();
+        $role = $query->find($data['id']);
+        $role->name = $data['name'];
+        $role->save();
+        $role->permissions()->sync($data['permissions']);
+        return $role;
     }
 
     public function destroy($id)

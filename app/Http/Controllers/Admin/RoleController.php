@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Interfaces\Admin\RoleServiceInterface;
 use Illuminate\Http\Request;
 use Validator;
+use Illuminate\Validation\Rule;
+
 
 class RoleController extends Controller
 {
@@ -47,6 +49,32 @@ class RoleController extends Controller
             'data' => $data
         ]);
 
+    }
+
+    public function edit(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:roles,id',
+            'name' => [
+                'required',
+                Rule::unique('roles', 'name')->ignore($request->id),
+            ],
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]);
+        }
+        $data = $this->roleService->edit($validator->validated());
+        return response()->json([
+            'status' => 200,
+            'message' => 'role updated successfully',
+            'data' => $data
+        ]);
     }
 
 
