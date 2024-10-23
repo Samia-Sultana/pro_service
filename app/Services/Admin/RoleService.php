@@ -49,9 +49,9 @@ class RoleService implements RoleServiceInterface
     public function destroy($id)
     {
         $query  = $this->roleModel->query();
-        $admin = $query->find($id);
-        if ($admin) {
-            return $admin->delete();
+        $role = $query->find($id);
+        if ($role) {
+            return $role->delete();
         }
         return false;
     }

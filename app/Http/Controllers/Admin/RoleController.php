@@ -77,5 +77,21 @@ class RoleController extends Controller
         ]);
     }
 
+    public function destroy($id){
+        $deleted = $this->roleService->destroy($id);
+        if ($deleted) {
+            return response()->json([
+            'status' => 200,
+            'message' => 'role deleted successfully',
+            ]);
+        } else {
+            return response()->json([
+            'status' => 404,
+            'message' => 'role not found',
+            ], 404);
+        }
+
+    }
+
 
 }
