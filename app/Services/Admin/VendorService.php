@@ -43,18 +43,29 @@ class VendorService implements VendorServiceInterface
     public function vendorDetail($id)
     {
         $query  = $this->vendorModel->query();
-        $admin = $query->findOrFail($id);
-        return $admin;
+        $vendor = $query->findOrFail($id);
+        return $vendor;
 
     }
 
     public function edit(array $data)
     {
         $query  = $this->vendorModel->query();
+        $data['vendor_photo'] = ImageHelper::processImage($data['vendor_photo'] ?? null, 'vendor_photos');
+        $data['nid_photo'] = ImageHelper::processImage($data['nid_photo'] ?? null, 'nid_photos');
+
         $vendor = $query->find($data['id']);
         $vendor->name = $data['name'];
+        $vendor->company_name = $data['company_name'];
+        $vendor->phone = $data['phone'];
+        $vendor->email = $data['email'];
+        $vendor->nid_number = $data['nid_number'];
+        $vendor->nid_photo = $data['nid_photo'];
+        $vendor->vendor_photo = $data['vendor_photo'];
+        $vendor->service_status = $data['service_status'];
+        $vendor->login_status = $data['login_status'];
         $vendor->save();
-        $vendor->permissions()->sync($data['permissions']);
+
         return $vendor;
     }
 
