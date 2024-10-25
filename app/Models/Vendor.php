@@ -19,4 +19,8 @@ class Vendor extends Model
         'nid_photo',
         'vendor_photo'
     ];
+    public function experts()
+    {
+        return $this->hasMany(Expert::class);
+    }
 }
