@@ -41,8 +41,7 @@ class ExpertService implements ExpertServiceInterface
 
     public function expertDetail($id)
     {
-        $query  = $this->expertModel->query();
-        $expert = $query->findOrFail($id);
+        $expert  = $this->expertModel->where('id', '=', $id)->with('vendor','categories','subcategories')->get();
         return $expert;
 
     }
@@ -55,18 +54,18 @@ class ExpertService implements ExpertServiceInterface
 
         $expert = $query->find($data['id']);
         $expert->name = $data['name'];
-        $expert->company_name = $data['company_name'];
+        $expert->vendor_id = $data['vendor_id'];
         $expert->phone = $data['phone'];
         $expert->email = $data['email'];
         $expert->nid_number = $data['nid_number'];
         $expert->nid_photo = $data['nid_photo'];
         $expert->expert_photo = $data['expert_photo'];
-        $expert->service_status = $data['service_status'];
-        $expert->login_status = $data['login_status'];
+        $expert->address = $data['address'];
         $expert->save();
 
         return $expert;
     }
+
 
     public function destroy($id)
     {
