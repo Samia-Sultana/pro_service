@@ -15,8 +15,11 @@ class AdminController extends Controller
         $this->adminService = $adminService;
     }
 
-    public function index(){
-        $data = $this->adminService->index();
+    public function index(Request $request){
+
+        $search = $request->input('searchQuery');
+
+        $data = $this->adminService->index($search);
 
         return response()->json([
             'status' => 200,
@@ -26,12 +29,14 @@ class AdminController extends Controller
     }
 
     public function store(Request $request){
+
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:8',
+            'name' => 'required|string|max:225',
             'email' => 'required|email|unique:users,email',
             'password' => [
                 'required',
-                'regex:/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/'
+                'string',
+                'min:6',
             ],
         ]);
         if($validator->fails()){
