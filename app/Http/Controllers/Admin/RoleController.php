@@ -28,11 +28,10 @@ class RoleController extends Controller
     }
 
     public function store(Request $request){
-        info('hiiii');
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:roles,name',
-            'permissions' => 'required|array',
-            'permissions.*' => 'exists:permissions,id',
+            // 'permissions' => 'required|array',
+            // 'permissions.*' => 'exists:permissions,id',
         ]);
 
         if($validator->fails()){
@@ -58,8 +57,8 @@ class RoleController extends Controller
                 'required',
                 Rule::unique('roles', 'name')->ignore($request->id),
             ],
-            'permissions' => 'required|array',
-            'permissions.*' => 'exists:permissions,id',
+            // 'permissions' => 'required|array',
+            // 'permissions.*' => 'exists:permissions,id',
         ]);
 
         if ($validator->fails()) {

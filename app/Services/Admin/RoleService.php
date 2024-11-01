@@ -14,7 +14,8 @@ class RoleService implements RoleServiceInterface
     }
     public function index()
     {
-        $query  = $this->roleModel->with('permissions');
+        // $query  = $this->roleModel->with('permissions');
+        $query  = $this->roleModel;
         return $query->paginate(10);
     }
     public function store(array $data)
@@ -23,7 +24,7 @@ class RoleService implements RoleServiceInterface
         $role = $query->create([
             'name' => $data['name'],
         ]);
-        $role->permissions()->attach($data['permissions']);
+        // $role->permissions()->attach($data['permissions']);
         return $role;
 
     }
@@ -42,7 +43,7 @@ class RoleService implements RoleServiceInterface
         $role = $query->find($data['id']);
         $role->name = $data['name'];
         $role->save();
-        $role->permissions()->sync($data['permissions']);
+        // $role->permissions()->sync($data['permissions']);
         return $role;
     }
 
