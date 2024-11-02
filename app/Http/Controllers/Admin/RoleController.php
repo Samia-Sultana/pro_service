@@ -17,8 +17,9 @@ class RoleController extends Controller
         $this->roleService = $roleService;
     }
 
-    public function index(){
-        $data = $this->roleService->index();
+    public function index(Request $request){
+        $search = $request->input('searchQuery');
+        $data = $this->roleService->index($search);
 
         return response()->json([
             'status' => 200,

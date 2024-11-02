@@ -13,9 +13,14 @@ class VendorService implements VendorServiceInterface
     {
         $this->vendorModel = $vendorModel;
     }
-    public function index()
+    public function index($search = null)
     {
         $query  = $this->vendorModel->query();
+        if (!empty($search)) {
+            foreach ($search as $field => $value) {
+                $query->where($field, 'like', '%' . $value . '%');
+            }
+        }
         return $query->paginate(10);
     }
     public function store(array $data)

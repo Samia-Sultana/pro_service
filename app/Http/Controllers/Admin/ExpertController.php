@@ -16,8 +16,9 @@ class ExpertController extends Controller
         $this->expertService = $expertService;
     }
 
-    public function index(){
-        $data = $this->expertService->index();
+    public function index(Request $request){
+        $search = $request->input('searchQuery');
+        $data = $this->expertService->index($search);
 
         return response()->json([
             'status' => 200,
