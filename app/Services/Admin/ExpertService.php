@@ -16,12 +16,13 @@ class ExpertService implements ExpertServiceInterface
     public function index($search = null)
     {
         $query  = $this->expertModel->query();
+        $experts = $query->with('categories','subcategories');
         if (!empty($search)) {
             foreach ($search as $field => $value) {
-                $query->where($field, 'like', '%' . $value . '%');
+                $experts->where($field, 'like', '%' . $value . '%');
             }
         }
-        return $query->paginate(10);
+        return $experts->paginate(10);
     }
     public function store(array $data)
     {
