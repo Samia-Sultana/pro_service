@@ -36,7 +36,7 @@ class ExpertController extends Controller
             'vendor_id' => 'required|exists:vendors,id',
             'category_ids' => 'required|array',
             'category_ids.*' => 'exists:categories,id',
-            'subcategory_ids' => 'required|array',
+            'subcategory_ids' => 'nullable',
             'subcategory_ids.*' => 'exists:subcategories,id',
             'expert_photo' => [
                 'image',
@@ -60,12 +60,12 @@ class ExpertController extends Controller
         }
         $expertData = $validator->validated();
         $categoryIds = $expertData['category_ids'];
-        $subcategoryIds = $expertData['subcategory_ids'];
+        // $subcategoryIds = $expertData['subcategory_ids'];
         unset($expertData['category_ids'], $expertData['subcategory_ids']);
 
         $expert = $this->expertService->store($expertData);
         $expert->categories()->attach($categoryIds);
-        $expert->subcategories()->attach($subcategoryIds);
+        // $expert->subcategories()->attach($subcategoryIds);
         return response()->json([
             'status' => 200,
             'message' => 'expert created successfully',

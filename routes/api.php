@@ -9,6 +9,10 @@ require __DIR__ . '/admin/permission.php';
 require __DIR__ . '/admin/role.php';
 require __DIR__ . '/admin/vendor.php';
 require __DIR__ . '/admin/expert.php';
+require __DIR__ . '/admin/category.php';
+require __DIR__ . '/admin/subcategory.php';
+
+
 
 
 Route::prefix('auth')->group(function () {
