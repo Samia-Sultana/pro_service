@@ -7,12 +7,14 @@ use App\Interfaces\Admin\CategoryServiceInterface;
 use App\Interfaces\Admin\ExpertServiceInterface;
 use App\Interfaces\Admin\PermissionServiceInterface;
 use App\Interfaces\Admin\RoleServiceInterface;
+use App\Interfaces\Admin\SubcategoryServiceInterface;
 use App\Interfaces\Admin\VendorServiceInterface;
 use App\Services\Admin\AdminService;
 use App\Services\Admin\CategoryService;
 use App\Services\Admin\ExpertService;
 use App\Services\Admin\PermissionService;
 use App\Services\Admin\RoleService;
+use App\Services\Admin\SubcategoryService;
 use App\Services\Admin\VendorService;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ExpertServiceInterface::class, ExpertService::class);
         $this->app->bind(CategoryServiceInterface::class, CategoryService::class);
 
+        $this->app->bind(SubcategoryServiceInterface::class, SubcategoryService::class);
 
 
     }

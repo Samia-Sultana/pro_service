@@ -121,12 +121,12 @@ class VendorController extends Controller
         if ($deleted) {
             return response()->json([
             'status' => 200,
-            'message' => 'role deleted successfully',
+            'message' => 'vendor deleted successfully',
             ]);
         } else {
             return response()->json([
             'status' => 404,
-            'message' => 'role not found',
+            'message' => 'vendor not found',
             ], 404);
         }
 
