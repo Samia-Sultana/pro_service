@@ -47,7 +47,7 @@ class ExpertService implements ExpertServiceInterface
 
     public function expertDetail($id)
     {
-        $expert  = $this->expertModel->where('id', '=', $id)->with('vendor','categories','subcategories')->get();
+        $expert  = $this->expertModel->where('id', '=', $id)->with('vendor','categories','subcategories')->first();
         return $expert;
 
     }

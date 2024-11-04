@@ -108,6 +108,7 @@ class VendorController extends Controller
     }
     public function vendorDetail($id){
         $data = $this->vendorService->vendorDetail($id);
+        info('kijhsggha');
 
         return response()->json([
             'status' => 200,
