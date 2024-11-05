@@ -27,6 +27,12 @@ class RoleController extends Controller
             'data' => $data
         ]);
     }
+    public function getPermissions($id)
+    {
+        $permissions = $this->roleService->getRolePermissions($id);
+
+        return response()->json(['data' => $permissions]);
+    }
 
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
