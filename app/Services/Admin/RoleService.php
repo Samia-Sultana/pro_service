@@ -3,6 +3,7 @@
 namespace App\Services\Admin;
 
 use App\Interfaces\Admin\RoleServiceInterface;
+use App\Models\Permission;
 use App\Models\Role;
 
 class RoleService implements RoleServiceInterface
@@ -76,16 +77,49 @@ class RoleService implements RoleServiceInterface
         return $admin;
 
     }
-
-    public function edit(array $data)
-    {
-        $query  = $this->roleModel->query();
-        $role = $query->find($data['id']);
+    public function edit(array $data) {
+        // Find the role by ID and update its name
+        $role = $this->roleModel->findOrFail($data['id']);
         $role->name = $data['name'];
         $role->save();
-        // $role->permissions()->sync($data['permissions']);
+
+        // Prepare data for syncing permissions with specific actions
+        $permissionsData = [];
+        foreach ($data['permissions'] as $permission) {
+            // For each action (read, create, edit, delete), find and set the enabled status
+            if (!empty($permission['read'])) {
+                $permissionRecord = Permission::where('name', $permission['name'])->where('action', 'read')->first();
+                if ($permissionRecord) {
+                    $permissionsData[$permissionRecord->id] = ['enabled' => 1];
+                }
+            }
+            if (!empty($permission['create'])) {
+                $permissionRecord = Permission::where('name', $permission['name'])->where('action', 'create')->first();
+                if ($permissionRecord) {
+                    $permissionsData[$permissionRecord->id] = ['enabled' => 1];
+                }
+            }
+            if (!empty($permission['edit'])) {
+                $permissionRecord = Permission::where('name', $permission['name'])->where('action', 'edit')->first();
+                if ($permissionRecord) {
+                    $permissionsData[$permissionRecord->id] = ['enabled' => 1];
+                }
+            }
+            if (!empty($permission['delete'])) {
+                $permissionRecord = Permission::where('name', $permission['name'])->where('action', 'delete')->first();
+                if ($permissionRecord) {
+                    $permissionsData[$permissionRecord->id] = ['enabled' => 1];
+                }
+            }
+        }
+
+        // Sync only permissions with `enabled` set to 1
+        $role->permissions()->sync($permissionsData);
+
         return $role;
     }
+
+
 
     public function destroy($id)
     {

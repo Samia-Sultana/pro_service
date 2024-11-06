@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Interfaces\Admin\RoleServiceInterface;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Validator;
 use Illuminate\Validation\Rule;
@@ -29,6 +30,7 @@ class RoleController extends Controller
     }
     public function getPermissions($id)
     {
+
         $permissions = $this->roleService->getRolePermissions($id);
 
         return response()->json(['data' => $permissions]);
@@ -64,8 +66,12 @@ class RoleController extends Controller
                 'required',
                 Rule::unique('roles', 'name')->ignore($request->id),
             ],
-            // 'permissions' => 'required|array',
-            // 'permissions.*' => 'exists:permissions,id',
+        'permissions' => 'required|array',
+        'permissions.*.name' => 'required|string',
+        'permissions.*.read' => 'boolean',
+        'permissions.*.create' => 'boolean',
+        'permissions.*.edit' => 'boolean',
+        'permissions.*.delete' => 'boolean',
         ]);
 
         if ($validator->fails()) {
