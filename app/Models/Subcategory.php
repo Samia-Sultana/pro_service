@@ -8,6 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Subcategory extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'image',
+        'card',
+        'category_id'
+
+];
     public function experts()
     {
         return $this->belongsToMany(Expert::class, 'subcategory_expert');

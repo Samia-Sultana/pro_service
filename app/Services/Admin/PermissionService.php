@@ -15,8 +15,21 @@ class PermissionService implements PermissionServiceInterface
     }
     public function index()
     {
-        $query  = $this->permissionModel->query();
-        return $query->paginate(10);
+        $permissions = $this->permissionModel
+        ->select('name', 'action')
+        ->get()
+        ->groupBy('name')
+        ->map(function ($group) {
+            return [
+                'name' => $group->first()->name,
+                'read' => $group->contains('action', 'read'),
+                'write' => $group->contains('action', 'write'),
+                'create' => $group->contains('action', 'create'),
+            ];
+        })
+        ->values();
+
+    return $permissions;
     }
 
 
