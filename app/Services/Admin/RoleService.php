@@ -33,7 +33,6 @@ class RoleService implements RoleServiceInterface
 
     public function getRolePermissions($roleId)
     {
-        info($roleId);
         $role = $this->roleModel->with(['permissions' => function ($query) use ($roleId) {
             $query->select('permissions.id', 'permissions.name', 'action')
                   ->join('permission_role as pr', 'permissions.id', '=', 'pr.permission_id')
