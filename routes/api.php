@@ -13,14 +13,3 @@ require __DIR__ . '/admin/category.php';
 require __DIR__ . '/admin/subcategory.php';
 
 
-
-
-Route::prefix('auth')->group(function () {
-    Route::get('/user', function () {
-        return response()->json(auth()->user());
-    });
-});
-
-// Route::get('/test', function () {
-//     return "test";
-// });

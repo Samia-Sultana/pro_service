@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\Expert;
+use App\Models\Vendor;
 use Hash;
 use Illuminate\Http\Request;
 use Auth;
@@ -39,7 +41,7 @@ class AuthController extends Controller
     }
     public function login(Request $request){
         $selectedRole = $request->selectedRole;
-        if ($selectedRole === 'admin') {
+        if ($selectedRole === 'user') {
             $validator = Validator::make($request->all(), [
                 'email' => 'required|email',
                 'password' => 'required',
@@ -57,8 +59,8 @@ class AuthController extends Controller
             return response()->json($validator->errors()->toJson(), 422);
         }
         switch ($selectedRole) {
-            case 'admin':
-                $guard = 'admin';
+            case 'user':
+                $guard = 'user';
                 $provider = 'users';
                 break;
             case 'vendor':
@@ -102,6 +104,22 @@ class AuthController extends Controller
         auth()->logout();
         JWTAuth::invalidate(JWTAuth::getToken());
         return response()->json(['message' => 'User logged out successfully']);
+    }
+
+    public function authUser(Request $request){
+        $selectedRole = $request->query('selectedRole');
+        if($selectedRole == 'user'){
+            $user = Auth::guard('user')->user();
+        }
+        elseif($selectedRole == 'vendor'){
+            $user = Auth::guard('vendor')->user();
+            $user = $user ? $user->only(['id', 'name', 'email']) : null;
+
+        }
+        elseif($selectedRole == 'expert'){
+            $user = Auth::guard('expert')->user();
+        }
+        return response()->json($user);
     }
 
 
