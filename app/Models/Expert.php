@@ -4,9 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Expert extends Model
+class Expert extends Authenticatable implements JWTSubject
 {
+    protected $table = 'experts';
+
     use HasFactory;
     protected $fillable = [
             'name',
@@ -31,5 +35,14 @@ class Expert extends Model
     public function subcategories()
     {
         return $this->belongsToMany(Subcategory::class, 'subcategory_expert');
+    }
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

@@ -15,7 +15,7 @@ class SubcategoryService implements SubcategoryServiceInterface
     }
     public function index($search = null)
     {
-        $query  = $this->subcategoryModel->query();
+        $query = $this->subcategoryModel->with('category');
 
         if (!empty($search)) {
             foreach ($search as $field => $value) {
