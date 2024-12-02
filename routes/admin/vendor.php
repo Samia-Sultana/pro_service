@@ -4,7 +4,7 @@
 use App\Http\Controllers\Admin\VendorController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => 'auth:api'], function(){
+Route::group(['middleware' => 'auth:user'], function(){
     Route::get('/vendors', [VendorController::class, 'index'])->name('vendors');
     Route::post('/vendor/store', [VendorController::class, 'store'])->name('vendor.store');
     Route::get('/vendor/{id}', [VendorController::class, 'vendorDetail'])->name('vendor.detail');
