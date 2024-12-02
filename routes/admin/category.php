@@ -5,7 +5,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CategoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => 'auth:api'], function(){
+Route::group(['middleware' => 'auth:user'], function(){
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories');
     Route::post('/category/store', [CategoryController::class, 'store'])->name('category.store');
     Route::get('/category/{id}', [CategoryController::class, 'categoryDetail'])->name('category.detail');

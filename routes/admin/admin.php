@@ -4,7 +4,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => 'auth:api'], function(){
+Route::group(['middleware' => 'auth:user'], function(){
     Route::get('/admins', [AdminController::class, 'index'])->name('admins');
     Route::post('/admin/store', [AdminController::class, 'store'])->name('admin.store');
     Route::get('/admin/{id}', [AdminController::class, 'adminDetail'])->name('admin.detail');

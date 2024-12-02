@@ -15,9 +15,19 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function _construct(){
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
+    public function _construct()
+{
+    $this->middleware(function ($request, $next) {
+        $selectedRole = $request->query('selectedRole');
+        $guard = $selectedRole;
+
+        if ($guard) {
+            $this->middleware($guard);
+        }
+
+        return $next($request);
+    })->except(['login', 'register']);
+}
     public function register(Request $request){
         $validator = Validator::make($request->all(), [
             'name' => 'required',
