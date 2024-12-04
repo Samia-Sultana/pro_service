@@ -118,6 +118,7 @@ class AuthController extends Controller
     }
 
     public function authUser(Request $request){
+
         $selectedRole = $request->query('selectedRole');
         if($selectedRole == 'user'){
             $user = Auth::guard('user')->user();
@@ -130,7 +131,10 @@ class AuthController extends Controller
         elseif($selectedRole == 'expert'){
             $user = Auth::guard('expert')->user();
         }
-        return response()->json($user);
+        return response()->json([
+            'user' => $user,
+            'selectedRole' => $selectedRole
+        ]);
     }
 
 
