@@ -94,14 +94,15 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->createNewToken($token);
+        return $this->createNewToken($token, $selectedRole);
     }
 
-    public function createNewToken($token){
+    public function createNewToken($token, $selectedRole){
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60 ,
+            'selected_role' => $selectedRole,
         ]);
 
     }
