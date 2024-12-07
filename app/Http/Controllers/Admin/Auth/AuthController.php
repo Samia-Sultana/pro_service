@@ -125,7 +125,6 @@ class AuthController extends Controller
         }
         elseif($selectedRole == 'vendor'){
             $user = Auth::guard('vendor')->user();
-            $user = $user ? $user->only(['id', 'name', 'email']) : null;
 
         }
         elseif($selectedRole == 'expert'){
@@ -135,6 +134,12 @@ class AuthController extends Controller
             'user' => $user,
             'selectedRole' => $selectedRole
         ]);
+    }
+
+    public function vendorDashboard(){
+    }
+
+    public function expertDashboard(){
     }
 
 
