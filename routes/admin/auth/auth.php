@@ -12,6 +12,7 @@ Route::prefix('auth')->group(function () {
     Route::get('/user', [AuthController::class, 'authUser']);
     Route::get('/vendor/dashboard', [AuthController::class, 'vedorDashboard'])->name('vendorDashboard');
     Route::get('/expert/dashboard', [AuthController::class, 'expertDashboard'])->name('expertDashboard');
+    Route::put('/update-profile', [AuthController::class, 'updateProfile']);
 
 
 });
