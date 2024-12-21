@@ -10,6 +10,7 @@ Route::group(['middleware' => 'auth:user'], function(){
     Route::get('/admin/{id}', [AdminController::class, 'adminDetail'])->name('admin.detail');
     Route::post('/admin/edit', [AdminController::class, 'edit'])->name('admin.edit');
     Route::delete('/admin/delete/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
+
 });
 
-
+Route::post('/user/forgot-password',[AdminController::class, 'passwordEmail'] )->name('admin.passwordEmail');

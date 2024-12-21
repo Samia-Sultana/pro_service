@@ -94,14 +94,15 @@ class AuthController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->createNewToken($token);
+        return $this->createNewToken($token, $selectedRole);
     }
 
-    public function createNewToken($token){
+    public function createNewToken($token, $selectedRole){
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60 ,
+            'selected_role' => $selectedRole,
         ]);
 
     }
@@ -117,19 +118,61 @@ class AuthController extends Controller
     }
 
     public function authUser(Request $request){
+
         $selectedRole = $request->query('selectedRole');
         if($selectedRole == 'user'){
             $user = Auth::guard('user')->user();
         }
         elseif($selectedRole == 'vendor'){
             $user = Auth::guard('vendor')->user();
-            $user = $user ? $user->only(['id', 'name', 'email']) : null;
 
         }
         elseif($selectedRole == 'expert'){
             $user = Auth::guard('expert')->user();
         }
-        return response()->json($user);
+        return response()->json([
+            'user' => $user,
+            'selectedRole' => $selectedRole
+        ]);
+    }
+
+    public function vendorDashboard(){
+    }
+
+    public function expertDashboard(){
+    }
+
+    public function updateProfile(Request $request){
+        $validatedData = $request->validate([
+            'email' => 'nullable|email',
+            'phone' => 'nullable|numeric',
+            'password' => 'nullable|min:8',
+            'selectedRole' => 'required|string',
+        ]);
+
+        $selectedRole = $request->selectedRole;
+        if($selectedRole == 'user'){
+            $user = Auth::guard('user')->user();
+        }
+        elseif($selectedRole == 'vendor'){
+            $user = Auth::guard('vendor')->user();
+
+        }
+        elseif($selectedRole == 'expert'){
+            $user = Auth::guard('expert')->user();
+        }
+
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+        if ($request->has('phone')) {
+            $user->phone = $request->phone;
+        }
+        if ($request->has('password') && !empty($request->password)) {
+            $user->password = Hash::make($request->password);
+        }
+        $user->save();
+        return response()->json(['message' => 'Profile updated successfully']);
     }
 
 

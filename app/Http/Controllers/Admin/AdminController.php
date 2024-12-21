@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Interfaces\Admin\AdminServiceInterface;
 use Illuminate\Http\Request;
+use Password;
 use Validator;
+
 
 class AdminController extends Controller
 {
@@ -14,6 +16,8 @@ class AdminController extends Controller
     public function __construct(AdminServiceInterface $adminService){
         $this->adminService = $adminService;
     }
+
+
 
     public function index(Request $request){
 
@@ -100,5 +104,17 @@ class AdminController extends Controller
         }
 
     }
+
+    public function passwordEmail(Request $request){
+        $request->validate(['email' => 'required|email']);
+        $status = Password::sendResetLink(
+        $request->only('email')
+        );
+        return $status === Password::RESET_LINK_SENT
+                ? back()->with(['status' => __($status)])
+                : back()->withErrors(['email' => __($status)]);
+        }
+
+
 
 }
