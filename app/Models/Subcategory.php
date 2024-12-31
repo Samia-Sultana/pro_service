@@ -22,8 +22,8 @@ class Subcategory extends Model
         return $this->belongsToMany(Expert::class, 'subcategory_expert');
     }
 
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
-    }
+    // public function category()
+    // {
+    //     return $this->belongsTo(Category::class);
+    // }
 }

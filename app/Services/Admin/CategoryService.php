@@ -23,6 +23,8 @@ class CategoryService implements CategoryServiceInterface
             }
         }
 
+        $query->with('parent');
+
         return $query->paginate(10);
     }
     public function store(array $data)
@@ -34,6 +36,7 @@ class CategoryService implements CategoryServiceInterface
         $category = $query->create([
             'name' => $data['name'],
             'slug' => $data['slug'],
+            'parent_id' => $data['parent_id'],
             'description' => $data['description'],
             'card' => $data['card'],
             'image' => $data['image'] ?? null,

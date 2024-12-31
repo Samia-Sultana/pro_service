@@ -11,6 +11,7 @@ class Category extends Model
     protected $fillable = [
         'name',
         'slug',
+        'parent_id',
         'description',
         'image',
         'card',
@@ -20,8 +21,13 @@ class Category extends Model
     {
         return $this->belongsToMany(Expert::class, 'category_expert');
     }
-    public function subcategories()
+    public function parent()
     {
-        return $this->hasMany(Subcategory::class);
+    return $this->belongsTo(Category::class, 'parent_id');
     }
+
+    // public function subcategories()
+    // {
+    //     return $this->hasMany(Subcategory::class);
+    // }
 }

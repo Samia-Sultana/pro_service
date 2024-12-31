@@ -19,6 +19,7 @@ class CategoryController extends Controller
         $search = $request->input('searchQuery');
 
         $data = $this->categoryService->index($search);
+        info($data);
 
         return response()->json([
             'status' => 200,
@@ -30,6 +31,7 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50',
             'slug' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:categories,id',
             'description' => 'required|string|max:255',
             'image' => [
                 'image',
