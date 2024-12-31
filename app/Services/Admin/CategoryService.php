@@ -59,7 +59,7 @@ class CategoryService implements CategoryServiceInterface
         $category = $query->find($data['id']);
         $category->name = $data['name'];
         $category->slug = $data['slug'];
-        $category->description = $data['description'];
+        $category->parent_id = $data['parent_id'];        $category->description = $data['description'];
         $category->card = $data['card'];
         $category->image = $data['image'];
         $category->save();

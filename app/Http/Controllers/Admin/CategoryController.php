@@ -68,6 +68,8 @@ class CategoryController extends Controller
             'slug' => [
                 'required', 'string', Rule::unique('categories', 'slug')->ignore($request->id),
             ],
+            'parent_id' => 'nullable|exists:categories,id',
+
 
             'description' =>'required|string|max:255',
 
