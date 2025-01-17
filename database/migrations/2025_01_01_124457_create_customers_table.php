@@ -18,6 +18,16 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone')->unique();
             $table->string('status');
+            $table->string('district')->nullable();
+
+            $table->string('area')->nullable();
+
+            $table->string('house_no')->nullable();
+
+            $table->string('road_no')->nullable();
+
+            $table->string('block')->nullable();
+
             $table->timestamps();
         });
     }
