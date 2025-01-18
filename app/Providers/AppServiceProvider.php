@@ -10,6 +10,7 @@ use App\Interfaces\Admin\CategoryPackageServiceInterface;
 use App\Interfaces\Admin\PermissionServiceInterface;
 use App\Interfaces\Admin\RoleServiceInterface;
 use App\Interfaces\Admin\SubcategoryServiceInterface;
+use App\Interfaces\Admin\OrderServiceInterface;
 use App\Interfaces\Admin\VendorServiceInterface;
 use App\Services\Admin\AdminService;
 use App\Services\Admin\CategoryService;
@@ -20,6 +21,8 @@ use App\Services\Admin\RoleService;
 use App\Services\Admin\SubcategoryService;
 use App\Services\Admin\VendorService;
 use App\Services\Admin\CustomerService;
+use App\Services\Admin\OrderService;
+
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -35,7 +38,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CategoryServiceInterface::class, CategoryService::class);
         $this->app->bind(SubcategoryServiceInterface::class, SubcategoryService::class);
         $this->app->bind( CustomerServiceInterface::class, CustomerService::class);
-        $this->app->bind( CategoryPackageServiceInterface::class, CategoryPackageService::class);
+        $this->app->bind(  CategoryPackageServiceInterface::class, CategoryPackageService::class);
+        $this->app->bind( OrderServiceInterface::class, OrderService::class);
+
 
 
 

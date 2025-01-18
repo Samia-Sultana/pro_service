@@ -13,6 +13,8 @@ require __DIR__ . '/admin/category.php';
 require __DIR__ . '/admin/subcategory.php';
 require __DIR__ . '/admin/customer.php';
 require __DIR__ . '/admin/package.php';
+require __DIR__ . '/admin/order.php';
+
 
 
 
