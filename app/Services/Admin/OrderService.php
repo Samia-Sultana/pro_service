@@ -16,13 +16,12 @@ class OrderService implements OrderServiceInterface
     public function index($search = null)
     {
         $query  = $this->orderModel->query();
-        $experts = $query->with('categories','subcategories');
         if (!empty($search)) {
             foreach ($search as $field => $value) {
-                $experts->where($field, 'like', '%' . $value . '%');
+                $query->where($field, 'like', '%' . $value . '%');
             }
         }
-        return $experts->paginate(10);
+        return $query->paginate(10);
     }
     public function store(array $data)
     {
@@ -80,9 +79,9 @@ class OrderService implements OrderServiceInterface
     public function destroy($id)
     {
         $query  = $this->orderModel->query();
-        $expert = $query->find($id);
-        if ($expert) {
-            return $expert->delete();
+        $order = $query->find($id);
+        if ($order) {
+            return $order->delete();
         }
         return false;
     }

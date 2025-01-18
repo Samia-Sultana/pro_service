@@ -63,4 +63,20 @@ class OrderController extends Controller
 
     }
 
+    public function destroy($id){
+        $deleted = $this->orderService->destroy($id);
+        if ($deleted) {
+            return response()->json([
+            'status' => 200,
+            'message' => 'order deleted successfully',
+            ]);
+        } else {
+            return response()->json([
+            'status' => 404,
+            'message' => 'order not found',
+            ], 404);
+        }
+
+    }
+
 }
