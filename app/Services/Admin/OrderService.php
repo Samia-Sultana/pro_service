@@ -50,7 +50,7 @@ class OrderService implements OrderServiceInterface
 
     public function orderDetail($id)
     {
-        $order  = $this->orderModel->where('id', '=', $id)->get();
+        $order  = $this->orderModel->where('id', '=', $id)->first();
         return $order;
 
     }
