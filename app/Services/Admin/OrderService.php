@@ -50,8 +50,8 @@ class OrderService implements OrderServiceInterface
 
     public function orderDetail($id)
     {
-        $expert  = $this->orderModel->where('id', '=', $id)->with('vendor','categories','subcategories')->first();
-        return $expert;
+        $order  = $this->orderModel->where('id', '=', $id)->get();
+        return $order;
 
     }
 

@@ -63,6 +63,16 @@ class OrderController extends Controller
 
     }
 
+    public function orderDetail($id){
+        $data = $this->orderService->orderDetail($id);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data retrieved successfully',
+            'data' => $data
+        ]);
+    }
+
     public function destroy($id){
         $deleted = $this->orderService->destroy($id);
         if ($deleted) {
