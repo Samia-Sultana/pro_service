@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Interfaces\Admin\OrderPackageInterface;
 use App\Interfaces\Admin\OrderServiceInterface;
+use DB;
 use Illuminate\Http\Request;
 use Validator;
 
 class OrderController extends Controller
 {
     protected $orderService;
+    protected $orderPackageService;
 
-    public function __construct(OrderServiceInterface $orderService){
+    public function __construct(OrderServiceInterface $orderService, OrderPackageInterface $orderPackageService){
         $this->orderService = $orderService;
+        $this->orderPackageService = $orderPackageService;
+
     }
 
     public function index(Request $request){
@@ -28,9 +33,11 @@ class OrderController extends Controller
 
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
-    'category_id' => 'required|exists:categories,id',
+        'category_ids' => 'required|array',
+        'category_ids.*' => 'exists:categories,id',
+        'category_package_ids' => 'required|array',
+        'category_package_ids.*' => 'exists:category_packages,id',
     'customer_id' => 'required|exists:customers,id',
-    'category_package_id' => 'required|exists:category_packages,id',
     'area' => 'required|string|max:255',
     'house_no' => 'required|string|max:255',
     'road_no' => 'required|string|max:255',
@@ -54,11 +61,26 @@ class OrderController extends Controller
             ]);
         }
         $orderData = $validator->validated();
-        $order = $this->orderService->store($orderData);
+
+        DB::beginTransaction();
+        try {
+            $order = $this->orderService->store($orderData);
+            info('Order Created:', ['order_id' => $order->id]);
+            $order_package = $this->orderPackageService->store($orderData, $order->id);
+            DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+
         return response()->json([
             'status' => 200,
             'message' => 'order created successfully',
-            'data' => $order,
+            'data' => [
+                'order' => $order,
+                // 'order_package' => $order_package
+            ],
         ]);
 
     }

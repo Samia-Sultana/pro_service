@@ -3,19 +3,19 @@
 namespace App\Services\Admin;
 
 use App\Helpers\ImageHelper;
-use App\Interfaces\Admin\OrderServiceInterface;
-use App\Models\Order;
+use App\Interfaces\Admin\OrderPackageInterface;
+use App\Models\OrderPackage;
 
-class OrderService implements OrderServiceInterface
+class orderPackageService implements OrderPackageInterface
 {
-    private Order $orderModel;
-    public function __construct(Order $orderModel)
+    private  $orderPackageModel;
+    public function __construct(OrderPackage $orderPackageModel)
     {
-        $this->orderModel = $orderModel;
+        $this->orderPackageModel = $orderPackageModel;
     }
     public function index($search = null)
     {
-        $query  = $this->orderModel->query();
+        $query  = $this->orderPackageModel->query();
         if (!empty($search)) {
             foreach ($search as $field => $value) {
                 $query->where($field, 'like', '%' . $value . '%');
@@ -23,39 +23,34 @@ class OrderService implements OrderServiceInterface
         }
         return $query->paginate(10);
     }
-    public function store(array $data)
-    {
-        $query  = $this->orderModel->query();
-        $order = $query->create([
-        'customer_id' => $data['customer_id'],
-        'area' => $data['area'],
-        'house_no' => $data['house_no'],
-        'road_no' => $data['road_no'],
-        'block' => $data['block'],
-        'district' => $data['district'],
-        'additional_info' => $data['additional_info'] ?? null,
-        'order_amount' => $data['order_amount'],
-        'discount' => $data['discount'] ?? 0,
-        'cupon' => $data['cupon'] ?? null,
-        'description' => $data['description'] ?? null,
-        'date' => $data['date'],
-        'slot' => $data['slot'],
-        'status' => $data['status'] ?? 'pending',
-        ]);
-        return $order;
+    public function store(array $data, $order)
+{
+    $orderPackages = [];
 
+    foreach ($data['category_package_ids'] as $categoryPackageId) {
+        $orderPackage = $this->orderPackageModel->create([
+            'order_id' => $order,
+            'category_package_id' => $categoryPackageId,
+
+        ]);
+
+        $orderPackages[] = $orderPackage;
     }
 
-    public function orderDetail($id)
+    return $orderPackages;
+}
+
+
+    public function orderPackageDetail($id)
     {
-        $order  = $this->orderModel->where('id', '=', $id)->get();
+        $order  = $this->orderPackageModel->where('id', '=', $id)->get();
         return $order;
 
     }
 
     public function edit(array $data)
     {
-        $query  = $this->orderModel->query();
+        $query  = $this->orderPackageModel->query();
         $data['expert_photo'] = ImageHelper::processImage($data['expert_photo'] ?? null, 'expert_photos');
         $data['nid_photo'] = ImageHelper::processImage($data['nid_photo'] ?? null, 'nid_photos');
 
@@ -76,7 +71,7 @@ class OrderService implements OrderServiceInterface
 
     public function destroy($id)
     {
-        $query  = $this->orderModel->query();
+        $query  = $this->orderPackageModel->query();
         $order = $query->find($id);
         if ($order) {
             return $order->delete();
