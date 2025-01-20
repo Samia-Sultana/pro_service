@@ -26,4 +26,14 @@ class Order extends Model
     'slot',
     'status',
     ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function orderPackages()
+    {
+        return $this->hasMany(OrderPackage::class);
+    }
 }

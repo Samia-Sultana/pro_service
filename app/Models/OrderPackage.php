@@ -10,4 +10,9 @@ class OrderPackage extends Model
         'order_id',
         'category_package_id'
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }

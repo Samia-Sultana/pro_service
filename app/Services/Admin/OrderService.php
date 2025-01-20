@@ -15,7 +15,7 @@ class OrderService implements OrderServiceInterface
     }
     public function index($search = null)
     {
-        $query  = $this->orderModel->query();
+        $query  = $this->orderModel->with('customer');
         if (!empty($search)) {
             foreach ($search as $field => $value) {
                 $query->where($field, 'like', '%' . $value . '%');
@@ -48,7 +48,7 @@ class OrderService implements OrderServiceInterface
 
     public function orderDetail($id)
     {
-        $order  = $this->orderModel->where('id', '=', $id)->get();
+        $order  = $this->orderModel->where('id', '=', $id)->first();
         return $order;
 
     }
