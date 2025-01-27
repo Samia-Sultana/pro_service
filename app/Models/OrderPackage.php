@@ -15,4 +15,13 @@ class OrderPackage extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    public function category(){
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function categoryPackage()
+    {
+        return $this->belongsTo(CategoryPackage::class, 'category_package_id');
+    }
 }
