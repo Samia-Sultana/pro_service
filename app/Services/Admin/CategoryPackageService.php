@@ -13,17 +13,16 @@ class CategoryPackageService implements CategoryPackageServiceInterface
         $this->categoryPackageModel = $categoryPackageModel;
     }
 
-    public function index($search = null, $category = null)
+    public function index(array $categories = [])
     {
         $query  = $this->categoryPackageModel->query();
-        if (!empty($search)) {
-            foreach ($search as $field => $value) {
-                $query->where($field, 'like', '%' . $value . '%');
-            }
-        }
-        if(!empty($category)){
-            $query->where('category_id', $category);
-        }
+        // if (!empty($search)) {
+        //     foreach ($search as $field => $value) {
+        //         $query->where($field, 'like', '%' . $value . '%');
+        //     }
+        // }
+        if(!empty($categories)){
+            $query->whereIn('category_id', $categories);        }
 
         return $query->paginate(10);
     }

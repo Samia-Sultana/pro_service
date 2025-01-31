@@ -5,7 +5,7 @@ namespace App\Interfaces\Admin;
 interface CategoryPackageServiceInterface
 {
 
-public function index(array $search = [], array $category = []);
+public function index(array $categories = []);
 public function store(array $data);
 public function packageDetail(int $id);
 public function edit(array $data);

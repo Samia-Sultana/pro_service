@@ -15,10 +15,13 @@ class CategoryPackageController extends Controller
     }
 
     public function index(Request $request){
-        $search = $request->input('searchQuery');
-        $category = $request->input('category');
+        // $search = $request->input('searchQuery');
+        $categories = $request->input('categories');
+        if (!is_array($categories)) {
+            $categories = explode(',', $categories);
+        }
 
-        $data = $this->packageService->index($search, $category);
+        $data = $this->packageService->index($categories);
         return response()->json([
             'status' => 200,
             'message' => 'Data retrieved successfully',
