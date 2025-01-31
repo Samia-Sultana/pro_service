@@ -48,6 +48,7 @@ class OrderService implements OrderServiceInterface
 
     public function orderDetail($id)
     {
+
         $order  = $this->orderModel->with(['orderPackages.category','orderPackages.categoryPackage'])->where('id', '=', $id)->first();
         info($order);
         return $order;
