@@ -12,7 +12,6 @@ class OrderObserver
      */
     public function created(Order $order): void
     {
-        info("Successfully observed");
         ProcessNewOrderJob::dispatch($order);
     }
 

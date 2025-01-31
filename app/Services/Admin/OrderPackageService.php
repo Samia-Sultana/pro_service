@@ -7,7 +7,7 @@ use App\Interfaces\Admin\OrderPackageInterface;
 use App\Models\CategoryPackage;
 use App\Models\OrderPackage;
 
-class orderPackageService implements OrderPackageInterface
+class OrderPackageService implements OrderPackageInterface
 {
     private  $orderPackageModel;
     private $categoryPackageModel;
