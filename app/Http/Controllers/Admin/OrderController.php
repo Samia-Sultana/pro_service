@@ -33,24 +33,24 @@ class OrderController extends Controller
 
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
-        'category_ids' => 'required|array',
-        'category_ids.*' => 'exists:categories,id',
-        'category_package_ids' => 'required|array',
-        'category_package_ids.*' => 'exists:category_packages,id',
-    'customer_id' => 'required|exists:customers,id',
-    'area' => 'required|string|max:255',
-    'house_no' => 'required|string|max:255',
-    'road_no' => 'required|string|max:255',
-    'block' => 'required|string|max:255',
-    'district' => 'required|string|max:255',
-    'additional_info' => 'nullable|string|max:500',
-    'order_amount' => 'required|numeric|min:0',
-    'discount' => 'nullable|numeric|min:0',
-    'cupon' => 'nullable|string|max:255',
-    'description' => 'nullable|string|max:1000',
-    'date' => 'required|date|after_or_equal:today',
-    'slot' => 'required|string|max:255',
-    'status' => 'nullable|string|in:pending,processing,canceled,completed',
+            'category_ids' => 'required|array',
+            'category_ids.*' => 'exists:categories,id',
+            'category_package_ids' => 'required|array',
+            'category_package_ids.*' => 'exists:category_packages,id',
+            'customer_id' => 'required|exists:customers,id',
+            'area' => 'required|string|max:255',
+            'house_no' => 'required|string|max:255',
+            'road_no' => 'required|string|max:255',
+            'block' => 'required|string|max:255',
+            'district' => 'required|string|max:255',
+            'additional_info' => 'nullable|string|max:500',
+            'order_amount' => 'required|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
+            'cupon' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'date' => 'required|date|after_or_equal:today',
+            'slot' => 'required|string|max:255',
+            'status' => 'nullable|string|in:pending,processing,canceled,completed',
         ]);
 
         if($validator->fails()){
@@ -65,8 +65,13 @@ class OrderController extends Controller
         DB::beginTransaction();
         try {
             $order = $this->orderService->store($orderData);
-            $order_package = $this->orderPackageService->store($orderData, $order->id);
-            DB::commit();
+
+            info($order);
+
+            if($order){
+                $order_package = $this->orderPackageService->store($orderData, $order->id);
+                DB::commit();
+            }
 
             } catch (\Exception $e) {
                 DB::rollBack();

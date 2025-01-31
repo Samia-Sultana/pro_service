@@ -8,7 +8,10 @@ class OrderPackage extends Model
 {
     protected $fillable = [
         'order_id',
-        'category_package_id'
+        'category_package_id',
+        'category_id',
+        'price',
+        'discount'
     ];
 
     public function order()

@@ -13,13 +13,9 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
-            $table->unsignedBigInteger('category_package_id');
-            $table->foreign('category_package_id')->references('id')->on('category_packages')->onDelete('cascade');
-
             $table->string('area');
             $table->string('house_no');
             $table->string('road_no');
