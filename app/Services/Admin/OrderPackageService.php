@@ -4,14 +4,17 @@ namespace App\Services\Admin;
 
 use App\Helpers\ImageHelper;
 use App\Interfaces\Admin\OrderPackageInterface;
+use App\Models\CategoryPackage;
 use App\Models\OrderPackage;
 
 class orderPackageService implements OrderPackageInterface
 {
     private  $orderPackageModel;
-    public function __construct(OrderPackage $orderPackageModel)
+    private $categoryPackageModel;
+    public function __construct(OrderPackage $orderPackageModel, CategoryPackage $categoryPackageModel)
     {
         $this->orderPackageModel = $orderPackageModel;
+        $this->categoryPackageModel = $categoryPackageModel;
     }
     public function index($search = null)
     {
@@ -28,10 +31,13 @@ class orderPackageService implements OrderPackageInterface
     $orderPackages = [];
 
     foreach ($data['category_package_ids'] as $categoryPackageId) {
+        $categoryPackage = $this->categoryPackageModel->find($categoryPackageId);
         $orderPackage = $this->orderPackageModel->create([
             'order_id' => $order,
             'category_package_id' => $categoryPackageId,
-
+            'category_id' => $categoryPackage->category_id,
+            'price' => $categoryPackage->price,
+            'discount' => $categoryPackage->discount,
         ]);
 
         $orderPackages[] = $orderPackage;
