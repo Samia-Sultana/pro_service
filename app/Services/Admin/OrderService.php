@@ -54,25 +54,7 @@ class OrderService implements OrderServiceInterface
 
     }
 
-    public function edit(array $data)
-    {
-        $query  = $this->orderModel->query();
-        $data['expert_photo'] = ImageHelper::processImage($data['expert_photo'] ?? null, 'expert_photos');
-        $data['nid_photo'] = ImageHelper::processImage($data['nid_photo'] ?? null, 'nid_photos');
 
-        $expert = $query->find($data['id']);
-        $expert->name = $data['name'];
-        $expert->vendor_id = $data['vendor_id'];
-        $expert->phone = $data['phone'];
-        $expert->email = $data['email'];
-        $expert->nid_number = $data['nid_number'];
-        $expert->nid_photo = $data['nid_photo'];
-        $expert->expert_photo = $data['expert_photo'];
-        $expert->address = $data['address'];
-        $expert->save();
-
-        return $expert;
-    }
 
 
     public function destroy($id)

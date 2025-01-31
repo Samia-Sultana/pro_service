@@ -48,24 +48,29 @@ class orderPackageService implements OrderPackageInterface
 
     }
 
-    public function edit(array $data)
+    public function update(array $data)
     {
-        $query  = $this->orderPackageModel->query();
-        $data['expert_photo'] = ImageHelper::processImage($data['expert_photo'] ?? null, 'expert_photos');
-        $data['nid_photo'] = ImageHelper::processImage($data['nid_photo'] ?? null, 'nid_photos');
+        $orderId = $data['services'][0]['order_id'];
+        $deletedOrderPackages = OrderPackage::where('order_id', $orderId)->delete();
 
-        $expert = $query->find($data['id']);
-        $expert->name = $data['name'];
-        $expert->vendor_id = $data['vendor_id'];
-        $expert->phone = $data['phone'];
-        $expert->email = $data['email'];
-        $expert->nid_number = $data['nid_number'];
-        $expert->nid_photo = $data['nid_photo'];
-        $expert->expert_photo = $data['expert_photo'];
-        $expert->address = $data['address'];
-        $expert->save();
 
-        return $expert;
+        try{
+
+            foreach($data['services'] as $package){
+                $this->orderPackageModel->create([
+                    'order_id' => $package['order_id'],
+                    'category_package_id' => $package['category_package_id'],
+                    'category_id' => $package['category_id'],
+                    'price' => $package['price'],
+                    'discount' => $package['discount'],
+
+                    ]);
+            }
+
+        }catch(\Exception $e){
+
+        }
+
     }
 
 

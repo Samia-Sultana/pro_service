@@ -93,6 +93,52 @@ class OrderController extends Controller
             'data' => $data
         ]);
     }
+    public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'services' => 'required|array',
+            'services.*.order_id' => 'required|integer|exists:orders,id',
+            'services.*.category_id' => 'required|integer|exists:categories,id',
+            'services.*.category_package_id' => 'required|integer|exists:category_packages,id',
+            'services.*.price' => 'required|numeric',
+            'services.*.discount' => 'nullable|numeric',
+
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]);
+        }
+        $orderData = $validator->validated();
+        try {
+        DB::beginTransaction();
+        try {
+            $this->orderPackageService->update($orderData);
+            DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'order created successfully',
+            'data' => [
+                // 'order' => $order,
+                // 'order_package' => $order_package
+            ],
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Error updating order', 'error' => $e->getMessage()], 500);
+    }
+
+
+    }
 
     public function destroy($id){
         $deleted = $this->orderService->destroy($id);
