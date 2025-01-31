@@ -52,6 +52,7 @@ class orderPackageService implements OrderPackageInterface
     {
         $orderId = $data['services'][0]['order_id'];
         $deletedOrderPackages = OrderPackage::where('order_id', $orderId)->delete();
+        info($data['services']);
 
 
         try{
