@@ -65,9 +65,6 @@ class OrderController extends Controller
         DB::beginTransaction();
         try {
             $order = $this->orderService->store($orderData);
-
-            info($order);
-
             if($order){
                 $order_package = $this->orderPackageService->store($orderData, $order->id);
                 DB::commit();

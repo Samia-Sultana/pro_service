@@ -36,4 +36,8 @@ class Order extends Model
     {
         return $this->hasMany(OrderPackage::class);
     }
+
+    public function experts(){
+        return $this->belongsToMany(Expert::class, 'expert_orders', 'order_id', 'expert_id');
+    }
 }

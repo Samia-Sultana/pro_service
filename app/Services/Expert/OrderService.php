@@ -4,14 +4,17 @@ namespace App\Services\Expert;
 
 use App\Helpers\ImageHelper;
 use App\Interfaces\Expert\OrderServiceInterface;
-use App\Models\Order;
+use App\Models\ExpertOrder;
 
 class OrderService implements OrderServiceInterface
 {
-    private Order $orderModel;
-    public function __construct(Order $orderModel)
+    private ExpertOrder $expertOrderModel;
+    public function __construct(ExpertOrder $expertOrderModel)
     {
-        $this->orderModel = $orderModel;
+        $this->expertOrderModel = $expertOrderModel;
+    }
+    public function allOrder($id){
+        return $this->expertOrderModel->where('expert_id',$id)->get();
     }
 
 
