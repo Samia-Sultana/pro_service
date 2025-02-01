@@ -25,6 +25,11 @@ use App\Services\Admin\VendorService;
 use App\Services\Admin\CustomerService;
 use App\Services\Admin\OrderService;
 
+use App\Interfaces\Expert\OrderServiceInterface as ExpertOrderServiceInterface;
+use App\Services\Expert\OrderService as ExpertOrderService;
+
+
+
 
 use Illuminate\Support\ServiceProvider;
 
@@ -45,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind( OrderServiceInterface::class, OrderService::class);
 
         $this->app->bind( OrderPackageInterface::class, orderPackageService::class);
+        $this->app->bind(ExpertOrderServiceInterface::class, ExpertOrderService::class);
 
 
 
