@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
-use App\Interfaces\Admin\OrderPackageInterface;
-use App\Interfaces\Expert\OrderServiceInterface;
+use App\Interfaces\Vendor\OrderServiceInterface;
 use Auth;
 use DB;
 use Illuminate\Http\Request;
@@ -20,9 +19,10 @@ class OrderController extends Controller
 
     }
 
-    public function allOrder($id){
-        $orders = $this->orderService->allOrder($id);
-        return response()->json([
+    public function allOrder(Request $request, $id){
+        $search = $request->input('searchQuery');
+        $orders = $this->orderService->allOrder($search, $id);
+return response()->json([
             'status' => 200,
             'message' => 'Data retrieved successfully',
             'data' => $orders
@@ -30,6 +30,16 @@ class OrderController extends Controller
 
 
 
+    }
+
+    public function orderDetail($id){
+        $data = $this->orderService->orderDetail($id);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data retrieved successfully',
+            'data' => $data
+        ]);
     }
 
 

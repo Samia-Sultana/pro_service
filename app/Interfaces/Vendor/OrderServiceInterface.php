@@ -4,7 +4,9 @@ namespace App\Interfaces\Vendor;
 
 interface OrderServiceInterface
 {
-    public function allOrder(int $id);
+    public function allOrder($search = null,int $id);
+    public function orderDetail(int $id);
+
 
 
 
