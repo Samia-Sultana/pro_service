@@ -4,7 +4,7 @@ namespace App\Services\Admin;
 
 use App\Helpers\ImageHelper;
 use App\Interfaces\Admin\VendorServiceInterface;
-use App\Models\vendor;
+use App\Models\Vendor;
 
 class VendorService implements VendorServiceInterface
 {
@@ -40,7 +40,8 @@ class VendorService implements VendorServiceInterface
             'login_status' => $data['login_status'],
             'vendor_photo' => $data['vendor_photo'] ?? null,
             'nid_photo' => $data['nid_photo'] ?? null,
-    ]);
+            'password' => bcrypt('12345678'),
+        ]);
         return $vendor;
 
     }

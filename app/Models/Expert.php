@@ -36,6 +36,11 @@ class Expert extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(Subcategory::class, 'subcategory_expert');
     }
+
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'expert_orders', 'expert_id', 'order_id');
+    }
     public function getJWTIdentifier()
     {
         return $this->getKey();

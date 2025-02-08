@@ -30,6 +30,9 @@ use App\Interfaces\Admin\PermissionServiceInterface;
 use App\Interfaces\Admin\SubcategoryServiceInterface;
 use App\Interfaces\Admin\CategoryPackageServiceInterface;
 
+use App\Interfaces\Expert\OrderServiceInterface as ExpertOrderServiceInterface;
+use App\Services\Expert\OrderService as ExpertOrderService;
+
 class AppServiceProvider extends ServiceProvider
 {
 
@@ -47,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind( OrderServiceInterface::class, OrderService::class);
 
         $this->app->bind( OrderPackageInterface::class, OrderPackageService::class);
+        $this->app->bind(ExpertOrderServiceInterface::class, ExpertOrderService::class);
 
 
 
