@@ -20,7 +20,8 @@ class Vendor extends Authenticatable implements JWTSubject
         'service_status',
         'login_status',
         'nid_photo',
-        'vendor_photo'
+        'vendor_photo',
+        'password',
     ];
     public function experts()
     {

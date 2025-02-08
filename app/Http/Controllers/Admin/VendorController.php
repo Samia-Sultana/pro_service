@@ -46,6 +46,7 @@ class VendorController extends Controller
                 'mimes:jpeg,png,jpg',
                 'max:2048',
             ],
+            'password' => 'nullable',
 
         ]);
 
