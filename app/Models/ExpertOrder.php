@@ -6,5 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExpertOrder extends Model
 {
-    //
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }
