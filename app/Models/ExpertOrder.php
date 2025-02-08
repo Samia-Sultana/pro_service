@@ -17,4 +17,8 @@ class ExpertOrder extends Model
         'vendor_id',
 
     ];
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }
