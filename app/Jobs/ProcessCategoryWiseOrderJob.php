@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\ExpertOrder;
 use App\Models\Order;
+use App\Models\Vendor;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -16,6 +18,8 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
     public $orderId;
     public $categoryId;
     public $packages;
+
+    public $timeout = 120;
 
     /**
      * Create a new job instance.
@@ -32,9 +36,46 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
      */
     public function handle(): void
     {
+        $vendors = Vendor::where('service_status', '=', 'active')->get();
 
-        info("Processing Order ID: {$this->orderId} for Category ID: {$this->categoryId}, Packages: " . json_encode($this->packages));
+        foreach ($vendors as $vendor) {
+            $orderRequest = $this->createOrderRequest($vendor);
 
-        // info($this->packages);
+            $startTime = now();
+            $statusAccepted = false;
+
+            while (true) {
+                $orderRequest->refresh();
+
+                if ($orderRequest->status === 'accepted') {
+                    $statusAccepted = true;
+                    break; // Exit the waiting loop as it’s accepted
+                }
+
+                if (now()->diffInSeconds($startTime) >= 60) {
+                    // Mark the request as timed out after 1 minute
+                    $orderRequest->update(['status' => 'timedout']);
+                    break;
+                }
+
+                sleep(5); // Wait for 5 seconds before checking again
+            }
+
+            if ($statusAccepted) {
+                info("Order ID: {$this->orderId} accepted by Vendor ID: {$vendor->id}");
+                break; // Stop processing further vendors
+            }
+        }
+    }
+
+
+    private function createOrderRequest($vendor)
+    {
+        return ExpertOrder::create([
+            'order_id'    => $this->orderId,
+            'category_id' => $this->categoryId,
+            'status'      => 'pending',
+            'vendor_id'   => $vendor->id,
+        ]);
     }
 }
