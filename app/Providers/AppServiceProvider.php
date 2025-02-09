@@ -35,7 +35,8 @@ use App\Services\Expert\OrderService as ExpertOrderService;
 
 use App\Interfaces\Vendor\OrderServiceInterface as VendorOrderServiceInterface;
 use App\Services\Vendor\OrderService as VendorOrderService;
-
+use App\Interfaces\Vendor\ExpertServiceInterface as VendorExpertServiceInterface;
+use App\Services\Vendor\ExpertService as VendorExpertService;
 
 
 
@@ -58,6 +59,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind( OrderPackageInterface::class, OrderPackageService::class);
         $this->app->bind(ExpertOrderServiceInterface::class, ExpertOrderService::class);
         $this->app->bind(VendorOrderServiceInterface::class, VendorOrderService::class);
+        $this->app->bind(VendorExpertServiceInterface::class, VendorExpertService::class);
 
 
     }

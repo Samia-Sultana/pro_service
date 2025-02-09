@@ -18,8 +18,7 @@ class OrderService implements OrderServiceInterface
     }
 
     public function allOrder($search = null, $id){
-        info($id);
-        $query  = $this->expertOrderModel->where('vendor_id', "=", $id)->with('order.customer');
+        $query  = $this->expertOrderModel->where('vendor_id', "=", $id)->with(['order.customer', 'order.orderPackages.categoryPackage']);
         if (!empty($search)) {
             foreach ($search as $field => $value) {
                 $query->where($field, 'like', '%' . $value . '%');
@@ -30,9 +29,16 @@ class OrderService implements OrderServiceInterface
 
      public function orderDetail($id)
     {
-
-        $order  = $this->orderModel->with(['orderPackages.category','orderPackages.categoryPackage'])->where('id', '=', $id)->first();
+        $order  = $this->expertOrderModel->where('order_id', "=", $id)->with(['order.customer', 'order.orderPackages.categoryPackage', 'order.orderPackages.category'])->get();
         return $order;
+    }
+
+    public function assignExpert($expertOrderId, $expertId){
+        $expertOrder = $this->expertOrderModel->find($expertOrderId);
+        $expertOrder->expert_id = $expertId;
+        $expertOrder->status = 'assigned';
+        $expertOrder->save();
+        return $expertOrder;
 
     }
 
