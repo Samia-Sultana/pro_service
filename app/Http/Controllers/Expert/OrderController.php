@@ -22,6 +22,7 @@ class OrderController extends Controller
 
     public function allOrder($id){
         $orders = $this->orderService->allOrder($id);
+        info($orders);
         return response()->json([
             'status' => 200,
             'message' => 'Data retrieved successfully',
