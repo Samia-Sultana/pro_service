@@ -22,7 +22,6 @@ class OrderController extends Controller
 
     public function allOrder($id){
         $orders = $this->orderService->allOrder($id);
-        info($orders);
         return response()->json([
             'status' => 200,
             'message' => 'Data retrieved successfully',
@@ -33,7 +32,14 @@ class OrderController extends Controller
 
     }
 
-    public function currentOrder(){
+    public function currentOrder($id){
+        $order = $this->orderService->currentOrder($id);
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data retrieved successfully',
+            'data' => $order
+        ]);
+
 
     }
 

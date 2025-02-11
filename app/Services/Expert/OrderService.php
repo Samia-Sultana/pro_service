@@ -19,9 +19,18 @@ class OrderService implements OrderServiceInterface
     ->where('expert_id', $id)
     ->with(['order.customer', 'order.orderPackages.categoryPackage'])
     ->get();
-    info($allOrders);
     return $allOrders;
      }
+
+    public function currentOrder($id){
+        $currentOrder = $this->expertOrderModel
+    ->where('expert_id', $id)
+    ->where('status', 'started')
+    ->with(['order.customer', 'order.orderPackages.categoryPackage'])
+    ->get();
+    return $currentOrder;
+    }
+
 
 
 
