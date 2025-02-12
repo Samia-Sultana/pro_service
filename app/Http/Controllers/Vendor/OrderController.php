@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Vendor;
 
+use DB;
+use Auth;
+
+use Validator;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use App\Interfaces\Vendor\OrderServiceInterface;
-
-use Auth;
-use DB;
-use Illuminate\Http\Request;
-use Validator;
 
 class OrderController extends Controller
 {
@@ -66,6 +67,22 @@ return response()->json([
             'message' => 'Expert assigned successfully',
             'data' => $data
         ]);
+    }
+
+    public function orderPdf(){
+
+        $data = [
+            [
+                'quantity' => 1,
+                'description' => '1 Year Subscription',
+                'price' => '129.00'
+            ]
+        ];
+
+        $pdf = Pdf::loadView('pdf', ['data' => $data]);
+
+        return $pdf->download();
+
     }
 
 
