@@ -18,7 +18,8 @@ class OrderService implements OrderServiceInterface
     }
 
     public function allOrder($search = null, $id){
-        $query  = $this->expertOrderModel->where('vendor_id', "=", $id)->with(['order.customer', 'order.orderPackages.categoryPackage']);
+        $query  = $this->expertOrderModel->where('vendor_id', "=", $id)->where('status', "!=", 'timedout')->with(['order.customer', 'order.orderPackages.categoryPackage']);
+
         if (!empty($search)) {
             foreach ($search as $field => $value) {
                 $query->where($field, 'like', '%' . $value . '%');
