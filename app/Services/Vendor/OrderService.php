@@ -30,7 +30,7 @@ class OrderService implements OrderServiceInterface
 
      public function orderDetail($id)
     {
-        $order  = $this->expertOrderModel->where('order_id', "=", $id)->with(['order.customer', 'order.orderPackages.categoryPackage', 'order.orderPackages.category'])->get();
+        $order  = $this->expertOrderModel->where('order_id', "=", $id)->where('status', "!=", 'timedout')->with(['order.customer', 'order.orderPackages.categoryPackage', 'order.orderPackages.category'])->get();
         return $order;
     }
 
@@ -42,6 +42,27 @@ class OrderService implements OrderServiceInterface
         return $expertOrder;
 
     }
+
+    public function rescheduleOrder($expertOrderId, $datetime)
+{
+
+    $carbonDate = \Carbon\Carbon::parse($datetime);
+
+    $date = $carbonDate->toDateString();
+    $time = $carbonDate->toTimeString();
+
+    $expertOrder = $this->expertOrderModel->find($expertOrderId);
+    if (!$expertOrder) {
+        return response()->json(['message' => 'Order not found'], 404);
+    }
+    $expertOrder->date = $date;
+    $expertOrder->time = $time;
+    $expertOrder->status = 'rescheduled';
+    $expertOrder->save();
+
+    return $expertOrder;
+}
+
 
 
 

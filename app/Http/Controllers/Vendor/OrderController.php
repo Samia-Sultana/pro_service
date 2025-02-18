@@ -85,6 +85,29 @@ return response()->json([
 
     }
 
+    public function rescheduleOrder(Request $request){
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|exists:expert_orders,id',
+            'date' => 'required|date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Validation error',
+                'data' => $validator->errors()
+            ]);
+        }
+
+        $this->orderService->rescheduleOrder($request->id, $request->date, $request->slot, $request->vendorId);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Order rescheduled successfully',
+            // 'data' => $data
+        ]);
+    }
+
 
 
 
