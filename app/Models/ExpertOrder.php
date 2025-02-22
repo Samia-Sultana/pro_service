@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class ExpertOrder extends Model
 {
+
+    protected $table = 'expert_orders';
+
     protected $fillable = [
         'expert_id',
         'order_id',

@@ -8,6 +8,7 @@ interface OrderServiceInterface
     public function orderDetail(int $id);
 
     public function assignExpert($expertOrderId, $expertId);
+    public function rescheduleOrder($expertOrderId, $date);
 
 
 
