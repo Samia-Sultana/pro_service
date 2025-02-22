@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Order;
+use App\Models\Notification;
 use App\Observers\OrderObserver;
 use App\Services\Admin\RoleService;
 use App\Services\Admin\AdminService;
@@ -20,23 +21,24 @@ use App\Services\Admin\CategoryPackageService;
 use App\Interfaces\Admin\AdminServiceInterface;
 use App\Interfaces\Admin\OrderPackageInterface;
 use App\Interfaces\Admin\OrderServiceInterface;
+use App\Observers\DatabaseNotificationObserver;
 use App\Interfaces\Admin\ExpertServiceInterface;
 use App\Interfaces\Admin\VendorServiceInterface;
 use App\Interfaces\Admin\CategoryServiceInterface;
+
+
 use App\Interfaces\Admin\CustomerServiceInterface;
 use App\Interfaces\Admin\PermissionServiceInterface;
-
 
 use App\Interfaces\Admin\SubcategoryServiceInterface;
 use App\Interfaces\Admin\CategoryPackageServiceInterface;
 
-use App\Interfaces\Expert\OrderServiceInterface as ExpertOrderServiceInterface;
 use App\Services\Expert\OrderService as ExpertOrderService;
-
-use App\Interfaces\Vendor\OrderServiceInterface as VendorOrderServiceInterface;
 use App\Services\Vendor\OrderService as VendorOrderService;
-use App\Interfaces\Vendor\ExpertServiceInterface as VendorExpertServiceInterface;
 use App\Services\Vendor\ExpertService as VendorExpertService;
+use App\Interfaces\Expert\OrderServiceInterface as ExpertOrderServiceInterface;
+use App\Interfaces\Vendor\OrderServiceInterface as VendorOrderServiceInterface;
+use App\Interfaces\Vendor\ExpertServiceInterface as VendorExpertServiceInterface;
 
 
 

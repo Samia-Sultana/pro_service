@@ -2,14 +2,16 @@
 
 namespace App\Jobs;
 
-use App\Models\ExpertOrder;
 use App\Models\Order;
 use App\Models\Vendor;
+use App\Models\ExpertOrder;
 use Illuminate\Queue\SerializesModels;
+use App\Notifications\OrderNotification;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Notification;
 
 class ProcessCategoryWiseOrderJob implements ShouldQueue
 {
@@ -45,6 +47,11 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
         $vendor = $vendors[$this->vendorIndex];
         $orderRequest = $this->createOrderRequest($vendor);
 
+
+        if ($orderRequest) {
+            Notification::send($orderRequest, new OrderNotification($orderRequest)); // Send the notification
+        }
+
         // Wait for 1 minute and recheck the status
         sleep(60); // Wait for 1 minute (you can adjust this if necessary)
 
@@ -75,4 +82,23 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
             'vendor_id'   => $vendor->id,
         ]);
     }
+
+    // public function sendNotification($expertOrder)
+    // {
+    //    // Retrieve the vendor who should receive the notification
+    //     info($expertOrder->vendor_id);
+
+    //     // Find the vendor
+    //     $vendor = Vendor::all();
+
+    //     info($vendor);
+
+    //     // Check if the vendor exists
+    //     if ($vendor) {
+    //         Notification::send($vendor, new OrderNotification($expertOrder));
+    //     } else {
+    //         // Log if the vendor is not found
+    //         info("Vendor ID: {$expertOrder->vendor_id} not found for Order ID: {$this->orderId}");
+    //     }
+    // }
 }
