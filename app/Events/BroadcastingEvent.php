@@ -2,11 +2,11 @@
 
 namespace App\Events;
 
-use App\Models\Notification;
-use App\Models\DatabaseNotification;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Notification;
 use Illuminate\Foundation\Events\Dispatchable;
+use App\Models\DatabaseNotification;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
@@ -26,15 +26,11 @@ class BroadcastingEvent implements ShouldBroadcastNow
         $this->databaseNotification = $databaseNotification;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return \Illuminate\Broadcasting\Channel|array
-     */
     public function broadcastOn()
     {
 
-        return [config('app.pusher_channel')];
+        return new Channel('my-channel');
+
 
     }
 

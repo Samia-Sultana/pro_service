@@ -14,6 +14,7 @@ use App\Services\Admin\CategoryService;
 use App\Services\Admin\CustomerService;
 use Illuminate\Support\ServiceProvider;
 use App\Services\Admin\PermissionService;
+use Illuminate\Support\Facades\Broadcast;
 use App\Services\Admin\SubcategoryService;
 use App\Services\Admin\OrderPackageService;
 use App\Interfaces\Admin\RoleServiceInterface;
@@ -24,15 +25,15 @@ use App\Interfaces\Admin\OrderServiceInterface;
 use App\Observers\DatabaseNotificationObserver;
 use App\Interfaces\Admin\ExpertServiceInterface;
 use App\Interfaces\Admin\VendorServiceInterface;
+
+
 use App\Interfaces\Admin\CategoryServiceInterface;
-
-
 use App\Interfaces\Admin\CustomerServiceInterface;
+
 use App\Interfaces\Admin\PermissionServiceInterface;
-
 use App\Interfaces\Admin\SubcategoryServiceInterface;
-use App\Interfaces\Admin\CategoryPackageServiceInterface;
 
+use App\Interfaces\Admin\CategoryPackageServiceInterface;
 use App\Services\Expert\OrderService as ExpertOrderService;
 use App\Services\Vendor\OrderService as VendorOrderService;
 use App\Services\Vendor\ExpertService as VendorExpertService;
@@ -70,5 +71,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Order::observe(OrderObserver::class);
+        Broadcast::routes();
+
     }
 }

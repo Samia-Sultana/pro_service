@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\NewMessage;
 use App\Models\Order;
 use App\Models\Vendor;
 use App\Models\ExpertOrder;
@@ -45,12 +46,21 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
         }
 
         $vendor = $vendors[$this->vendorIndex];
+
+        $vendorData = Vendor::where('id', '=', $vendor->id)->first();
         $orderRequest = $this->createOrderRequest($vendor);
 
 
+        event(new NewMessage($orderRequest->toArray()));
+
+        // if ($orderRequest) {
+        //     Notification::send($orderRequest, new OrderNotification($orderRequest)); // Send the notification
+        // }
+
         if ($orderRequest) {
-            Notification::send($orderRequest, new OrderNotification($orderRequest)); // Send the notification
+            Notification::send($vendorData, new OrderNotification($orderRequest));
         }
+
 
         // Wait for 1 minute and recheck the status
         sleep(60); // Wait for 1 minute (you can adjust this if necessary)
