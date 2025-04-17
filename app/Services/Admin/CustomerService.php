@@ -44,6 +44,15 @@ class CustomerService implements CustomerServiceInterface
 
     }
 
+    public function customerOrders($id)
+    {
+        $query  = $this->customerModel->query();
+        $customer = $query->findOrFail($id);
+        return $customer->orders;
+
+
+    }
+
     public function edit(array $data)
     {
 

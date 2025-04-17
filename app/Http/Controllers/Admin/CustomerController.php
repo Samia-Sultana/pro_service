@@ -135,6 +135,16 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function customerOrders($id){
+        $data = $this->customerService->customerOrders($id);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data retrieved successfully',
+            'data' => $data
+        ]);
+    }
+
     public function destroy($id){
         $deleted = $this->customerService->destroy($id);
         if ($deleted) {

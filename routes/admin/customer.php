@@ -10,6 +10,8 @@ Route::group(['middleware' => 'auth:user'], function(){
     Route::get('/customer/{id}', [CustomerController::class, 'customerDetail'])->name('customer.detail');
     Route::post('/customer/edit', [CustomerController::class, 'edit'])->name('customer.edit');
     Route::delete('/customer/delete/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
+    Route::get('/customer/{id}/orders', [CustomerController::class, 'customerOrders'])->name('customer.orders');
+
 });
 
 
