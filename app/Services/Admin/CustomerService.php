@@ -38,8 +38,7 @@ class CustomerService implements CustomerServiceInterface
 
     public function customerDetail($id)
     {
-        $query  = $this->customerModel->query();
-        $customer = $query->findOrFail($id);
+        $customer = $this->customerModel->with('wallet')->findOrFail($id);
         return $customer;
 
     }

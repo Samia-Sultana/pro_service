@@ -50,4 +50,9 @@ class Expert extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function wallet()
+{
+    return $this->morphOne(Wallet::class, 'walletable');
+}
 }

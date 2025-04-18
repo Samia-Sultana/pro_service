@@ -2,6 +2,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\CustomerWalletController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'auth:user'], function(){
@@ -11,6 +12,8 @@ Route::group(['middleware' => 'auth:user'], function(){
     Route::post('/customer/edit', [CustomerController::class, 'edit'])->name('customer.edit');
     Route::delete('/customer/delete/{id}', [CustomerController::class, 'destroy'])->name('customer.destroy');
     Route::get('/customer/{id}/orders', [CustomerController::class, 'customerOrders'])->name('customer.orders');
+    Route::post('/customer/{id}/wallet', [CustomerWalletController::class, 'addMoney']);
+
 
 });
 

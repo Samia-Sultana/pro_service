@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Interfaces\Admin\CustomerWalletServiceInterface;
 use App\Models\Order;
 use App\Observers\OrderObserver;
+use App\Services\Admin\CustomerWalletService;
 use App\Services\Admin\RoleService;
 use App\Services\Admin\AdminService;
 use App\Services\Admin\OrderService;
@@ -60,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ExpertOrderServiceInterface::class, ExpertOrderService::class);
         $this->app->bind(VendorOrderServiceInterface::class, VendorOrderService::class);
         $this->app->bind(VendorExpertServiceInterface::class, VendorExpertService::class);
+        $this->app->bind(CustomerWalletServiceInterface::class, CustomerWalletService::class);
 
 
     }

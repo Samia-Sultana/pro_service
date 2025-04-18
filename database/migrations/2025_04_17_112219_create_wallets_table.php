@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('wallet', function (Blueprint $table) {
+        Schema::create('wallets', function (Blueprint $table) {
             $table->id();
-            $table->decimal('balance', 5, 2)->default(0);
+            $table->decimal('balance', 7, 2)->default(0);
             $table->morphs('walletable');
             $table->timestamps();
         });
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('wallet');
+        Schema::dropIfExists('wallets');
     }
 };

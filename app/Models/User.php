@@ -34,6 +34,13 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
+    // User.php
+public function wallet()
+{
+    return $this->morphOne(Wallet::class, 'walletable');
+}
+
+
     /**
      * Get the attributes that should be cast.
      *

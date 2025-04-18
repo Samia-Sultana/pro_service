@@ -15,4 +15,10 @@ class Customer extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function wallet()
+{
+    return $this->morphOne(Wallet::class, 'walletable');
+}
+
 }

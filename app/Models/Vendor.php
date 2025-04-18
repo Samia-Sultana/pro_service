@@ -23,6 +23,13 @@ class Vendor extends Authenticatable implements JWTSubject
         'vendor_photo',
         'password',
     ];
+
+    // User.php
+public function wallet()
+{
+    return $this->morphOne(Wallet::class, 'walletable');
+}
+
     public function experts()
     {
         return $this->hasMany(Expert::class);

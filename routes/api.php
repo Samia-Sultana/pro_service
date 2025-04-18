@@ -17,6 +17,10 @@ require __DIR__ . '/admin/order.php';
 require __DIR__ . '/expert/order.php';
 require __DIR__ . '/vendor/order.php';
 require __DIR__ . '/vendor/expert.php';
+require __DIR__ . '/admin/wallet.php';
+require __DIR__ . '/vendor/wallet.php';
+require __DIR__ . '/expert/wallet.php';
+
 
 
 
