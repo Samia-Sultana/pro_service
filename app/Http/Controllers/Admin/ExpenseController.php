@@ -35,7 +35,8 @@ class ExpenseController extends Controller
             'title' => 'required|string|max:100',
             'amount' => 'required|numeric|min:0',
             'expense_type_id' => 'required|exists:expense_types,id',
-            'description' => 'nullable|string|max:255',
+
+            'remarks' => 'nullable|string|max:255',
             'date' => 'required|date',
             'image' => [
                 'nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048',
@@ -66,7 +67,8 @@ class ExpenseController extends Controller
             'title' => 'required|string|max:100',
             'amount' => 'required|numeric|min:0',
             'expense_type_id' => 'required|exists:expense_types,id',
-            'description' => 'nullable|string|max:255',
+
+            'remarks' => 'nullable|string|max:255',
             'date' => 'required|date',
             'image' => [
                 'nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048',

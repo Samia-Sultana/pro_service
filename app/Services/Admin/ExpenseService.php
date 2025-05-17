@@ -38,9 +38,10 @@ class ExpenseService implements ExpenseServiceInterface
             'title' => $data['title'],
             'amount' => $data['amount'],
             'expense_type_id' => $data['expense_type_id'],
-            'description' => $data['description'] ?? null,
+
+            'remarks' => $data['remarks'] ?? null,
             'date' => $data['date'],
-            'image' => $data['image'] ?? null,
+            'attachment' => $data['image'] ?? null,
         ]);
 
         return $expense;
@@ -63,10 +64,11 @@ class ExpenseService implements ExpenseServiceInterface
         $expense->title = $data['title'];
         $expense->amount = $data['amount'];
         $expense->expense_type_id = $data['expense_type_id'];
-        $expense->description = $data['description'] ?? null;
+
+        $expense->remarks = $data['remarks'] ?? null;
         $expense->date = $data['date'];
         if (!empty($data['image'])) {
-            $expense->image = $data['image'];
+            $expense->attachment = $data['image'];
         }
 
         $expense->save();
