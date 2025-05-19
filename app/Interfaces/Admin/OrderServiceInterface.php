@@ -10,5 +10,6 @@ public function store(array $data);
 
 public function orderDetail(int $id);
 public function destroy(int $id);
+public function updateOrderStatus($order);
 
 }

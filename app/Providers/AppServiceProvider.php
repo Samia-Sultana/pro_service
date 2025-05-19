@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Interfaces\Admin\CustomerWalletServiceInterface;
 use App\Interfaces\Admin\ExpenseServiceInterface;
 use App\Interfaces\Admin\ExpenseTypeServiceInterface;
+use App\Interfaces\Admin\IncomeServiceInterface;
 use App\Models\Order;
 use App\Observers\OrderObserver;
 use App\Services\Admin\CustomerWalletService;
+use App\Services\Admin\IncomeService;
 use App\Services\Admin\RoleService;
 use App\Services\Admin\ExpenseService;
 use App\Services\Admin\ExpenseTypeService;
@@ -71,6 +73,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ExpenseServiceInterface::class, ExpenseService::class);
         $this->app->bind(ExpenseTypeServiceInterface::class, ExpenseTypeService::class);
 
+        $this->app->bind(IncomeServiceInterface::class, IncomeService::class);
 
 
     }

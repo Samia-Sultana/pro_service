@@ -6,6 +6,7 @@ use App\Helpers\ImageHelper;
 use App\Interfaces\Admin\OrderServiceInterface;
 use App\Models\Income;
 use App\Models\Order;
+use App\Models\OrderPackage;
 use DB;
 
 class OrderService implements OrderServiceInterface
@@ -57,41 +58,37 @@ class OrderService implements OrderServiceInterface
 
     }
 
-    public function updateOrderStatus($orderData){
-        $query = $this->orderModel->query();
-    $order = $query->find($orderData['id']);
+    public function updateOrderStatus($data){
+        $order = $this->orderModel->find($data['id']);
 
-    if (!$order) {
-        return false;
-    }
+    if (!$order) return false;
 
-    return DB::transaction(function () use ($order, $orderData) {
-        $newStatus = $orderData['status'];
+    DB::beginTransaction();
 
-        if ($newStatus === 'completed') {
-            $order->status = 'completed';
-            $order->save();
+    try {
+        $order->status = $data['status'];
+        $order->save();
 
-            if (!Income::where('order_id', $order->id)->exists()) {
-                $incomeAmount = $order->order_amount * 0.10;
-
-                Income::create([
-                    'order_id' => $order->id,
-                    'income_amount' => $incomeAmount,
-                ]);
-            }
-
-        } elseif ($newStatus === 'cancelled') {
-            DB::table('order_packages')->where('order_id', $order->id)->delete();
-            $order->delete();
-
-        } else {
-            $order->status = $newStatus;
-            $order->save();
+        if ($data['status'] === 'completed') {
+            $incomeAmount = ($order->order_amount - $order->discount) * 0.10;
+            Income::create([
+                'order_id' => $order->id,
+                'income_amount' => $incomeAmount,
+            ]);
         }
 
+        if ($data['status'] === 'cancelled') {
+            OrderPackage::where('order_id', $order->id)->delete();
+            $order->delete();
+        }
+
+        DB::commit();
         return true;
-    });
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error($e);
+        return false;
+    }
     }
 
 

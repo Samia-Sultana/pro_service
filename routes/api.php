@@ -22,6 +22,7 @@ require __DIR__ . '/vendor/wallet.php';
 require __DIR__ . '/expert/wallet.php';
 require __DIR__ . '/admin/expenseType.php';
 require __DIR__ . '/admin/expense.php';
+require __DIR__ . '/admin/income.php';
 
 
 
