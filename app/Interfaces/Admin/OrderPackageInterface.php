@@ -11,4 +11,6 @@ public function orderPackageDetail(int $id);
 public function update(array $data);
 public function destroy(int $id);
 
+public function updateOrderStatus($order);
+
 }

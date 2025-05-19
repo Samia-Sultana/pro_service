@@ -158,4 +158,30 @@ class OrderController extends Controller
 
     }
 
+    public function updateOrderStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|string|in:pending,processing,canceled,completed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        $orderData = $validator->validated();
+        $order = $this->orderService->updateOrderStatus( $orderData);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Order status updated successfully',
+            'data' => $order
+        ]);
+
+
+    }
+
 }

@@ -4,7 +4,9 @@ namespace App\Services\Admin;
 
 use App\Helpers\ImageHelper;
 use App\Interfaces\Admin\OrderServiceInterface;
+use App\Models\Income;
 use App\Models\Order;
+use DB;
 
 class OrderService implements OrderServiceInterface
 {
@@ -55,6 +57,42 @@ class OrderService implements OrderServiceInterface
 
     }
 
+    public function updateOrderStatus($orderData){
+        $query = $this->orderModel->query();
+    $order = $query->find($orderData['id']);
+
+    if (!$order) {
+        return false;
+    }
+
+    return DB::transaction(function () use ($order, $orderData) {
+        $newStatus = $orderData['status'];
+
+        if ($newStatus === 'completed') {
+            $order->status = 'completed';
+            $order->save();
+
+            if (!Income::where('order_id', $order->id)->exists()) {
+                $incomeAmount = $order->order_amount * 0.10;
+
+                Income::create([
+                    'order_id' => $order->id,
+                    'income_amount' => $incomeAmount,
+                ]);
+            }
+
+        } elseif ($newStatus === 'cancelled') {
+            DB::table('order_packages')->where('order_id', $order->id)->delete();
+            $order->delete();
+
+        } else {
+            $order->status = $newStatus;
+            $order->save();
+        }
+
+        return true;
+    });
+    }
 
 
 
@@ -67,6 +105,8 @@ class OrderService implements OrderServiceInterface
         }
         return false;
     }
+
+
 
 
 }
