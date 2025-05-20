@@ -7,6 +7,7 @@ use App\Interfaces\Admin\OrderServiceInterface;
 use App\Models\Income;
 use App\Models\Order;
 use App\Models\OrderPackage;
+use App\Models\Wallet;
 use DB;
 
 class OrderService implements OrderServiceInterface
@@ -75,6 +76,10 @@ class OrderService implements OrderServiceInterface
                 'order_id' => $order->id,
                 'income_amount' => $incomeAmount,
             ]);
+
+            Wallet::where('walletable_id', '4')
+                ->where('walletable_type', 'App\Models\User')
+                ->increment('balance', $incomeAmount);
         }
 
         if ($data['status'] === 'cancelled') {

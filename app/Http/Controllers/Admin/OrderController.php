@@ -167,6 +167,7 @@ class OrderController extends Controller
 
     $result = $this->orderService->updateOrderStatus($validated);
 
+
     return $result
         ? response()->json(['message' => 'Status updated successfully'])
         : response()->json(['message' => 'Failed to update status'], 500);

@@ -33,7 +33,7 @@ class ExpenseTypeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100|unique:expense_types,name',
-            'status' => 'nullable|boolean',
+            'status' => 'nullable|string',
             'description' => 'nullable|string|max:255'
         ]);
 
@@ -62,7 +62,7 @@ class ExpenseTypeController extends Controller
                 'required', 'string', 'max:100',
                 Rule::unique('expense_types', 'name')->ignore($request->id)
             ],
-            'status' => 'nullable|boolean',
+            'status' => 'nullable|string',
             'description' => 'nullable|string|max:255'
         ]);
 
