@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Expert;
 use App\Http\Controllers\Controller;
 use App\Interfaces\Admin\OrderPackageInterface;
 use App\Interfaces\Expert\OrderServiceInterface;
+use App\Models\Income;
+use App\Models\VendorIncome;
 use Auth;
 use DB;
 use Illuminate\Http\Request;
@@ -47,9 +49,45 @@ class OrderController extends Controller
 
     }
 
-    public function updateOrderStatus(){
+    public function updateStatus(Request $request)
+{
+    $validated = Validator::make($request->all(), [
+        'id' => 'required|exists:orders,id',
+        'category_id' => 'required|exists:categories,id',
+        'expert_id' => 'required|exists:experts,id',
+        'status' => 'required|in:started,completed',
+    ]);
 
+    if ($validated->fails()) {
+        return response()->json([
+            'status' => 422,
+            'message' => 'Invalid data',
+            'errors' => $validated->errors()
+        ]);
     }
+
+    $data = $validated->validated();
+
+    try {
+        DB::beginTransaction();
+
+        $success = $this->orderService->updateOrderStatus($data);
+
+
+        if (!$success) {
+            DB::rollBack();
+            return response()->json(['status' => 400, 'message' => 'Could not update status']);
+        }
+
+        DB::commit();
+        return response()->json(['status' => 200, 'message' => 'Status updated successfully']);
+    } catch (\Exception $e) {
+        DB::rollBack();
+        \Log::error($e);
+        return response()->json(['status' => 500, 'message' => 'Internal server error']);
+    }
+}
+
 
 
 

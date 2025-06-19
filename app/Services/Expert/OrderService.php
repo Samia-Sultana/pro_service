@@ -31,6 +31,24 @@ class OrderService implements OrderServiceInterface
     return $currentOrder;
     }
 
+    public function updateOrderStatus($data)
+    {
+        $expertOrder = $this->expertOrderModel->where('order_id', $data['id'])
+        ->where('category_id', $data['category_id'])
+        ->where('expert_id', $data['expert_id'])
+        ->where('status', '!=', 'timedout')
+        ->first();
+
+
+        if($expertOrder){
+            $expertOrder->status = $data['status'];
+            $expertOrder->save();
+        }
+
+
+        return $expertOrder;
+    }
+
 
 
 
