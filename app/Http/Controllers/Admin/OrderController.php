@@ -38,6 +38,7 @@ class OrderController extends Controller
             'category_package_ids' => 'required|array',
             'category_package_ids.*' => 'exists:category_packages,id',
             'customer_id' => 'required|exists:customers,id',
+            'order_type' => 'required|string|in:Prepaid,Postpaid',
             'area' => 'required|string|max:255',
             'house_no' => 'required|string|max:255',
             'road_no' => 'required|string|max:255',
@@ -62,11 +63,37 @@ class OrderController extends Controller
         }
         $orderData = $validator->validated();
 
+         $customer = \App\Models\Customer::with('wallet')->find($orderData['customer_id']);
+
+    if (!$customer || $customer->wallet == null) {
+        return response()->json([
+            'status' => 404,
+            'message' => 'Wallet not found for this customer. Please create wallet first',
+        ]);
+    }
+
+    $amount = $orderData['order_amount'] - ($orderData['discount'] ?? 0);
+
+$walletBalance = $customer->wallet->balance;
+$frozenBalance = $customer->wallet->frozen_balance;
+$availableBalance = $walletBalance - $frozenBalance;
+
+if ($availableBalance < $amount) {
+    return response()->json([
+        'status' => 403,
+        'message' => 'Insufficient wallet balance. Please add funds to Customer account.',
+    ]);
+}
+
+
+
         DB::beginTransaction();
         try {
             $order = $this->orderService->store($orderData);
             if($order){
                 $order_package = $this->orderPackageService->store($orderData, $order->id);
+                $customer->wallet->increment('frozen_balance', $amount);
+
                 DB::commit();
             }
 
