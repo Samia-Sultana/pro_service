@@ -59,7 +59,6 @@ class OrderService implements OrderServiceInterface
     {
 
         $order = $this->orderModel->with(['orderPackages.category', 'orderPackages.categoryPackage'])->where('id', '=', $id)->first();
-        info($order);
         return $order;
 
     }
@@ -68,20 +67,40 @@ class OrderService implements OrderServiceInterface
     {
         $order = $this->orderModel->find($data['id']);
 
+
         if (!$order)
             return false;
 
-    if (in_array($order->status, ['completed', 'cancelled'])) {
-        return false;
-    }
+        if (in_array($order->status, ['completed', 'cancelled'])) {
+            return false;
+        }
+
 
         DB::beginTransaction();
 
         try {
-            $order->status = $data['status'];
-            $order->save();
+
 
             if ($data['status'] === 'completed') {
+
+                $expertOrders = ExpertOrder::where('order_id', $data['id'])
+                    ->where('status', '!=', 'timedout')
+                    ->get();
+
+                if ($expertOrders->isNotEmpty()) {
+                    $allCompleted = $expertOrders->every(function ($item) {
+                        return $item->status === 'completed';
+                    });
+
+                    if ($allCompleted) {
+                        $order->status = 'completed';
+                        $order->save();
+                    }
+                    else{
+                        return false;
+                    }
+                }
+
                 $customerWallet = Wallet::where('walletable_id', $order->customer_id)
                     ->where('walletable_type', 'App\Models\Customer')
                     ->first();
@@ -90,63 +109,107 @@ class OrderService implements OrderServiceInterface
 
                 //create admin income record
                 $incomeAmount = ($order->order_amount - $order->discount) * 0.10;
+
                 Income::create([
                     'order_id' => $order->id,
                     'income_amount' => $incomeAmount,
                 ]);
 
-                Wallet::where('walletable_id', '4')
-                    ->where('walletable_type', 'App\Models\User')
-                    ->increment('balance', $incomeAmount);
+                $adminWallet = Wallet::firstOrCreate(
+                    [
+                        'walletable_id' => 4,
+                        'walletable_type' => \App\Models\User::class,
+                    ],
+                    [
+                        'walletable_id' => 4,
+                        'walletable_type' => \App\Models\User::class,
+                        'balance' => 0,
+                    ]
+                );
+
+
+                $adminWallet->increment('balance', $incomeAmount);
+
 
                 // Create vendor income record
-                $orderPackages = OrderPackage::where('order_id', $order->id)->get();
-                $orderExpertsAndVendors = ExpertOrder::where('order_id', $order->id)
-                    ->where('status', '!=', 'timedout')
-                    ->get();
+                if ($order->order_type === 'Prepaid') {
 
-                $categoryPayables = [];
+                    $orderPackages = OrderPackage::where('order_id', $order->id)->get();
+                    $orderExpertsAndVendors = ExpertOrder::where('order_id', $order->id)
+                        ->where('status', '!=', 'timedout')
+                        ->get();
 
-                foreach ($orderPackages as $package) {
-                    $net = $package->price - $package->discount;
-                    $categoryId = $package->category_id;
+                    $categoryPayables = [];
 
-                    if (!isset($categoryPayables[$categoryId])) {
-                        $categoryPayables[$categoryId] = 0;
+                    foreach ($orderPackages as $package) {
+                        $net = $package->price - $package->discount;
+                        $categoryId = $package->category_id;
+
+                        if (!isset($categoryPayables[$categoryId])) {
+                            $categoryPayables[$categoryId] = 0;
+                        }
+
+                        $categoryPayables[$categoryId] += $net;
                     }
 
-                    $categoryPayables[$categoryId] += $net;
-                }
 
+                    $vendorAmounts = [];
 
-                $vendorAmounts = [];
-                foreach ($orderExpertsAndVendors as $item) {
-                    $vendorId = $item->vendor_id;
-                    $categoryId = $item->category_id;
+                    foreach ($orderExpertsAndVendors as $item) {
+                        $vendorId = $item->vendor_id;
+                        $categoryId = $item->category_id;
 
-                    if (!isset($categoryPayables[$categoryId])) {
-                        continue;
+                        if (!isset($categoryPayables[$categoryId])) {
+                            continue;
+                        }
+
+                        $share = $categoryPayables[$categoryId];
+
+                        if (!isset($vendorAmounts[$vendorId])) {
+                            $vendorAmounts[$vendorId] = [];
+                        }
+
+                        if (!isset($vendorAmounts[$vendorId][$categoryId])) {
+                            $vendorAmounts[$vendorId][$categoryId] = 0;
+                        }
+
+                        $vendorAmounts[$vendorId][$categoryId] += $share;
                     }
 
-                    $share = $categoryPayables[$categoryId];
 
-                    if (!isset($vendorAmounts[$vendorId])) {
-                        $vendorAmounts[$vendorId] = 0;
+                    foreach ($vendorAmounts as $vendorId => $categories) {
+                        // Create VendorIncome
+                        foreach ($categories as $categoryId => $amount) {
+                            // Create VendorIncome
+                            VendorIncome::create([
+                                'order_id' => $order->id,
+                                'vendor_id' => $vendorId,
+                                'category_id' => $categoryId,
+                                'income_amount' => $amount,
+                            ]);
+
+                            // Ensure the vendor's wallet exists
+                            $wallet = Wallet::firstOrCreate(
+                                [
+                                    'walletable_id' => $vendorId,
+                                    'walletable_type' => \App\Models\Vendor::class,
+                                ],
+                                [
+                                    'walletable_id' => $vendorId,
+                                    'walletable_type' => \App\Models\Vendor::class,
+                                    'balance' => 0,
+                                ]
+                            );
+
+
+                            // Increment the wallet balance
+                            $wallet->increment('balance', $amount);
+                        }
+
+
+
                     }
 
-                    $vendorAmounts[$vendorId] += $share;
-                }
-
-                foreach ($vendorAmounts as $vendorId => $amount) {
-                    VendorIncome::create([
-                        'order_id' => $order->id,
-                        'vendor_id' => $vendorId,
-                        'income_amount' => $amount,
-                    ]);
-
-                    Wallet::where('walletable_id', $vendorId)
-                        ->where('walletable_type', 'App\Models\Vendor')
-                        ->increment('balance', $amount);
                 }
 
 

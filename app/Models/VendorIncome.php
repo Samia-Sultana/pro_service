@@ -6,10 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class VendorIncome extends Model
 {
-    protected $fillable = ['order_id', 'income_amount', 'remarks', 'attachment', 'date'];
+    protected $fillable = ['order_id', 'income_amount', 'remarks', 'attachment', 'date', 'status', 'vendor_id', 'category_id'];
 
-    public function order()
-    {
-        return $this->belongsTo(Order::class);
-    }
+
+
 }

@@ -6,6 +6,7 @@ use App\Helpers\ImageHelper;
 use App\Interfaces\Vendor\OrderServiceInterface;
 use App\Models\ExpertOrder;
 use App\Models\Order;
+use App\Models\VendorIncome;
 
 class OrderService implements OrderServiceInterface
 {
@@ -27,6 +28,23 @@ class OrderService implements OrderServiceInterface
         }
         return $query->paginate(10);
      }
+
+    public function vendorIncome($id){
+$categories = ExpertOrder::where('order_id', $id)
+    ->where('vendor_id', auth()->user()->id)
+    ->where('status', '!=', 'timedout')
+    ->pluck('category_id')
+    ->toArray();
+
+$vendorIncome = VendorIncome::where('order_id', $id)
+    ->where('vendor_id', auth()->user()->id)
+    ->whereIn('category_id', $categories)
+    ->get();
+
+        return $vendorIncome;
+    }
+
+
 
      public function orderDetail($id)
     {

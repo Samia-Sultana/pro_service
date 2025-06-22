@@ -2,10 +2,13 @@
 
 namespace App\Services\Expert;
 
-use App\Helpers\ImageHelper;
-use App\Interfaces\Expert\OrderServiceInterface;
-use App\Models\ExpertOrder;
 use App\Models\Order;
+use App\Models\Income;
+use App\Models\ExpertOrder;
+use App\Helpers\ImageHelper;
+use App\Models\OrderPackage;
+use App\Models\VendorIncome;
+use App\Interfaces\Expert\OrderServiceInterface;
 
 class OrderService implements OrderServiceInterface
 {
@@ -14,40 +17,88 @@ class OrderService implements OrderServiceInterface
     {
         $this->expertOrderModel = $expertOrderModel;
     }
-    public function allOrder($id){
+    public function allOrder($id)
+    {
         $allOrders = $this->expertOrderModel
-    ->where('expert_id', $id)
-    ->with(['order.customer', 'order.orderPackages.categoryPackage'])
-    ->get();
-    return $allOrders;
-     }
+            ->where('expert_id', $id)
+            ->with(['order.customer', 'order.orderPackages.categoryPackage'])
+            ->get();
+        return $allOrders;
+    }
 
-    public function currentOrder($id){
+    public function currentOrder($id)
+    {
         $currentOrder = $this->expertOrderModel
-    ->where('expert_id', $id)
-    ->where('status', 'started')
-    ->with(['order.customer', 'order.orderPackages.categoryPackage'])
-    ->get();
-    return $currentOrder;
+            ->where('expert_id', $id)
+            ->where('status', 'started')
+            ->with(['order.customer', 'order.orderPackages.categoryPackage'])
+            ->get();
+        return $currentOrder;
     }
 
     public function updateOrderStatus($data)
     {
         $expertOrder = $this->expertOrderModel->where('order_id', $data['id'])
-        ->where('category_id', $data['category_id'])
-        ->where('expert_id', $data['expert_id'])
-        ->where('status', '!=', 'timedout')
-        ->first();
+            ->where('category_id', $data['category_id'])
+            ->where('expert_id', $data['expert_id'])
+            ->where('status', '!=', 'timedout')
+            ->first();
 
-
-        if($expertOrder){
+        if ($expertOrder) {
             $expertOrder->status = $data['status'];
             $expertOrder->save();
+        } else {
+            return false;
         }
 
+        if ($data['status'] === 'completed') {
+            $order = Order::find($data['id']);
+            if (!$order) {
+                return false;
+            }
 
-        return $expertOrder;
+            // $incomeAmount = ($order->order_amount - $order->discount) * 0.10;
+            // Income::create([
+            //     'order_id' => $order->id,
+            //     'income_amount' => $incomeAmount,
+            //     'status' => 'pending',
+            // ]);
+
+            if($order->order_type === 'PostPaid'){
+                $orderPackages = OrderPackage::where('order_id', $order->id)->get();
+            $categoryPayables = [];
+
+            foreach ($orderPackages as $package) {
+                $net = $package->price - $package->discount;
+                $categoryId = $package->category_id;
+
+                if (!isset($categoryPayables[$categoryId])) {
+                    $categoryPayables[$categoryId] = 0;
+                }
+
+                $categoryPayables[$categoryId] += $net;
+            }
+
+            $vendorId = $expertOrder->vendor_id;
+            $categoryId = $expertOrder->category_id;
+            $share = $categoryPayables[$categoryId] ?? 0;
+
+            VendorIncome::create([
+                'order_id' => $order->id,
+                'vendor_id' => $vendorId,
+                'income_amount' => $share,
+                'status' => 'pending',
+            ]);
+            }
+
+            elseif($order->order_type === 'Prepaid'){
+                //send notification to admin
+            }
+        }
+
+        return true;
     }
+
 
 
 

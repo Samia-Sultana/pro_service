@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Vendor;
 
 use DB;
 use Auth;
-
 use Validator;
+
+use App\Models\Wallet;
+use App\Models\VendorIncome;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
@@ -36,6 +38,46 @@ return response()->json([
 
     }
 
+
+public function markComplete(Request $request)
+{
+    $request->validate([
+        'id' => 'required|exists:vendor_incomes,id',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        $income = VendorIncome::findOrFail($request->id);
+
+        if ($income->status !== 'complete') {
+            $income->status = 'complete';
+            $income->save();
+        }
+
+        Wallet::where('walletable_id', $income->vendor_id)
+            ->where('walletable_type', 'App\Models\Vendor')
+            ->increment('balance', $income->income_amount);
+
+        DB::commit();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Vendor income marked as complete.'
+        ]);
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Something went wrong.',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
+
+
+
     public function orderDetail($id){
         $data = $this->orderService->orderDetail($id);
 
@@ -45,6 +87,17 @@ return response()->json([
             'data' => $data
         ]);
     }
+
+    public function vendorIncome($id){
+        $data = $this->orderService->vendorIncome($id);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Data retrieved successfully',
+            'data' => $data
+        ]);
+    }
+
 
     public function assignExpert(Request $request){
         $validator = Validator::make($request->all(), [
