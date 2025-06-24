@@ -44,6 +44,7 @@ class OrderService implements OrderServiceInterface
             ->where('status', '!=', 'timedout')
             ->first();
 
+
         if ($expertOrder) {
             $expertOrder->status = $data['status'];
             $expertOrder->save();
@@ -54,6 +55,7 @@ class OrderService implements OrderServiceInterface
         if ($data['status'] === 'completed') {
             $order = Order::find($data['id']);
             if (!$order) {
+                info(message: 'Order not found for ID: ' . $data['id']);
                 return false;
             }
 
@@ -64,9 +66,9 @@ class OrderService implements OrderServiceInterface
             //     'status' => 'pending',
             // ]);
 
-            if($order->order_type === 'PostPaid'){
+            if($order->order_type === 'Postpaid'){
                 $orderPackages = OrderPackage::where('order_id', $order->id)->get();
-            $categoryPayables = [];
+                $categoryPayables = [];
 
             foreach ($orderPackages as $package) {
                 $net = $package->price - $package->discount;
@@ -88,11 +90,12 @@ class OrderService implements OrderServiceInterface
                 'vendor_id' => $vendorId,
                 'income_amount' => $share,
                 'status' => 'pending',
+                'category_id' => $categoryId,
             ]);
             }
 
             elseif($order->order_type === 'Prepaid'){
-                //send notification to admin
+                //notification for admin
             }
         }
 

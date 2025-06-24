@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Expert;
+use App\Models\ExpertIncome;
 use App\Models\Transaction;
 use DB;
 use Illuminate\Http\Request;
@@ -55,6 +56,16 @@ class VendorWalletController extends Controller
             'receiver_wallet_id' => $receiverWallet->id,
 
         ]);
+
+        ExpertIncome::create([
+            'expert_id' => $receiverWallet->walletable_id,
+            'income_amount' => $request->amount,
+            'status' => 'complete',
+            'order_id' => 'n/a',
+            'category_id' => 'n/a',
+        ]);
+
+
     });
 
 
