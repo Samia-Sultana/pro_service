@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Helpers\ImageHelper;
 use App\Interfaces\Admin\ExpertServiceInterface;
 use App\Models\Expert;
+use App\Models\Wallet;
 
 class ExpertService implements ExpertServiceInterface
 {
@@ -40,6 +41,15 @@ class ExpertService implements ExpertServiceInterface
             'address' => $data['address'],
             'expert_photo' => $data['expert_photo'] ?? null,
             'nid_photo' => $data['nid_photo'] ?? null,
+            'password' => bcrypt('12345678'),
+
+    ]);
+
+    Wallet::create([
+        'walletable_id' => $expert->id,
+        'walletable_type' => Expert::class,
+        'balance' => 0,
+        'frozen_balance' => 0,
     ]);
         return $expert;
 

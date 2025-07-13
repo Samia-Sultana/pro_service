@@ -61,8 +61,8 @@ class VendorWalletController extends Controller
             'expert_id' => $receiverWallet->walletable_id,
             'income_amount' => $request->amount,
             'status' => 'complete',
-            'order_id' => 'n/a',
-            'category_id' => 'n/a',
+            // 'order_id' => 'n/a',
+            // 'category_id' => 'n/a',
         ]);
 
 

@@ -30,7 +30,12 @@ class CustomerService implements CustomerServiceInterface
         $customer = $query->create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'phone' => $data['phone'],
+            'status' => $data['status'],
+            'district' => $data['district'],
+            'area' => $data['area'],
+            'road_no' => $data['road_no'],
+            'house_no' => $data['house_no'],
         ]);
         return $customer;
 
@@ -38,7 +43,7 @@ class CustomerService implements CustomerServiceInterface
 
     public function customerDetail($id)
     {
-        $customer = $this->customerModel->with('wallet')->findOrFail($id);
+        $customer = $this->customerModel->with(['wallet', 'orders'])->findOrFail($id);
         return $customer;
 
     }
@@ -60,6 +65,7 @@ class CustomerService implements CustomerServiceInterface
     public function destroy($id)
     {
         $query  = $this->customerModel->query();
+
         $customer = $query->find($id);
         if ($customer) {
             return $customer->delete();

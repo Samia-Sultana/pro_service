@@ -50,7 +50,7 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
 
         $orderRequest->refresh();
 
-        if ($orderRequest->status === 'accepted') {
+        if ($orderRequest->status === 'assigned') {
             info("Order ID: {$this->orderId} accepted by Vendor ID: {$vendor->id}");
             return; // Exit as the request has been accepted
         }

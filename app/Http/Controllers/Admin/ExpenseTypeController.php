@@ -37,12 +37,11 @@ class ExpenseTypeController extends Controller
             'description' => 'nullable|string|max:255'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+       if ($validator->fails()) {
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
 
         $expenseType = $this->expenseTypeService->store($validator->validated());
@@ -67,11 +66,10 @@ class ExpenseTypeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
 
         $expenseType = $this->expenseTypeService->edit($validator->validated());

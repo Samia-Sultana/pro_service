@@ -37,8 +37,8 @@ class ExpertController extends Controller
             'vendor_id' => 'required|exists:vendors,id',
             'category_ids' => 'required|array',
             'category_ids.*' => 'exists:categories,id',
-            'subcategory_ids' => 'required|array',
-            'subcategory_ids.*' => 'exists:subcategories,id',
+            // 'subcategory_ids' => 'required|array',
+            // 'subcategory_ids.*' => 'exists:subcategories,id',
             'expert_photo' => [
                 'image',
                 'mimes:jpeg,png,jpg',
@@ -49,24 +49,25 @@ class ExpertController extends Controller
                 'mimes:jpeg,png,jpg',
                 'max:2048',
             ],
+            'password' => 'nullable',
+
 
         ]);
 
-        if($validator->fails()){
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+        if ($validator->fails()) {
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
         $expertData = $validator->validated();
         $categoryIds = $expertData['category_ids'];
-        $subcategoryIds = $expertData['subcategory_ids'];
-        unset($expertData['category_ids'], $expertData['subcategory_ids']);
+        // $subcategoryIds = $expertData['subcategory_ids'];
+        unset($expertData['category_ids']);
 
         $expert = $this->expertService->store($expertData);
         $expert->categories()->attach($categoryIds);
-        $expert->subcategories()->attach($subcategoryIds);
+        // $expert->subcategories()->attach($subcategoryIds);
         return response()->json([
             'status' => 200,
             'message' => 'expert created successfully',
@@ -84,8 +85,8 @@ class ExpertController extends Controller
             'vendor_id' => 'required|exists:vendors,id',
             'category_ids' => 'required|array',
             'category_ids.*' => 'exists:categories,id',
-            'subcategory_ids' => 'required|array',
-            'subcategory_ids.*' => 'exists:subcategories,id',
+            // 'subcategory_ids' => 'required|array',
+            // 'subcategory_ids.*' => 'exists:subcategories,id',
             'email' => [
                 'required', 'email', Rule::unique('experts', 'email')->ignore($request->id),
             ],
@@ -105,20 +106,19 @@ class ExpertController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
         $expertData = $validator->validated();
         $categoryIds = $expertData['category_ids'];
-        $subcategoryIds = $expertData['subcategory_ids'];
-        unset($expertData['category_ids'], $expertData['subcategory_ids']);
+        // $subcategoryIds = $expertData['subcategory_ids'];
+        unset($expertData['category_ids']);
 
         $expert = $this->expertService->edit($validator->validated());
         $expert->categories()->sync($categoryIds);
-        $expert->subcategories()->sync($subcategoryIds);
+        // $expert->subcategories()->sync($subcategoryIds);
         return response()->json([
             'status' => 200,
             'message' => 'expert updated successfully',

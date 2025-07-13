@@ -217,6 +217,11 @@ class OrderService implements OrderServiceInterface
             }
 
             if ($data['status'] === 'cancelled') {
+                $orderAmount = $order->order_amount - $order->discount;
+                Wallet::where('walletable_id', $order->customer_id)
+                    ->where('walletable_type', 'App\Models\Customer')
+                    ->first()
+                    ->decrement('frozen_balance', $orderAmount);
                 OrderPackage::where('order_id', $order->id)->delete();
                 $order->delete();
             }

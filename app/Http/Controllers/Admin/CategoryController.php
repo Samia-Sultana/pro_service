@@ -29,8 +29,8 @@ class CategoryController extends Controller
     }
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:50',
-            'slug' => 'required|string|max:255',
+            'name' => 'required|string|max:50|unique:categories,name',
+            'slug' => 'required|string|max:255|unique:categories,slug',
             'parent_id' => 'nullable|exists:categories,id',
             'description' => 'required|string|max:255',
             'image' => [
@@ -41,13 +41,13 @@ class CategoryController extends Controller
             'card' => 'required|in:0,1'
         ]);
 
-        if($validator->fails()){
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+        if ($validator->fails()) {
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
+
         $categoryData = $validator->validated();
         $category = $this->categoryService->store($categoryData);
         return response()->json([
@@ -79,13 +79,13 @@ class CategoryController extends Controller
             'card' => 'required|in:0,1'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+         if ($validator->fails()) {
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
+
         $categoryData = $validator->validated();
         $category = $this->categoryService->edit($categoryData);
 

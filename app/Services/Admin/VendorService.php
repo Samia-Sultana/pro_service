@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Helpers\ImageHelper;
 use App\Interfaces\Admin\VendorServiceInterface;
 use App\Models\Vendor;
+use App\Models\Wallet;
 
 class VendorService implements VendorServiceInterface
 {
@@ -41,6 +42,13 @@ class VendorService implements VendorServiceInterface
             'vendor_photo' => $data['vendor_photo'] ?? null,
             'nid_photo' => $data['nid_photo'] ?? null,
             'password' => bcrypt('12345678'),
+        ]);
+
+        Wallet::create([
+            'walletable_id' => $vendor->id,
+            'walletable_type' => Vendor::class,
+            'balance' => 0,
+            'frozen_balance' => 0,
         ]);
         return $vendor;
 

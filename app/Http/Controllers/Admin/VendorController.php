@@ -50,12 +50,11 @@ class VendorController extends Controller
 
         ]);
 
-        if($validator->fails()){
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+       if ($validator->fails()) {
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
         $data = $this->vendorService->store($validator->validated());
         return response()->json([
@@ -94,11 +93,10 @@ class VendorController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
         $data = $this->vendorService->edit($validator->validated());
         return response()->json([

@@ -21,6 +21,8 @@ class Expert extends Authenticatable implements JWTSubject
             'address',
             'expert_photo',
             'nid_photo',
+            'password',
+
     ];
     public function vendor()
     {

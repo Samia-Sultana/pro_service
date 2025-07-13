@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Interfaces\Admin\IncomeServiceInterface;
+use Validator;
+use App\Models\Income;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Validator;
+use App\Http\Controllers\Controller;
+use App\Interfaces\Admin\IncomeServiceInterface;
 
 class IncomeController extends Controller
 {
@@ -27,6 +29,28 @@ class IncomeController extends Controller
             'message' => 'Income data retrieved successfully',
             'data' => $data
         ]);
+    }
+
+
+    public function incomeStatusUpdate(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:incomes,id',
+            'status' => 'required|string|in:complete',
+        ]);
+
+        $income = Income::findOrFail($request->id);
+
+        $income->status = $request->status;
+        $income->save();
+
+        $adminWallet = Wallet::where('walletable_id', '4')
+            ->where('walletable_type', 'App\Models\User')
+            ->first();
+        if ($adminWallet) {
+            $adminWallet->increment('balance', $income->income_amount);
+        }
+
     }
 
     public function store(Request $request)

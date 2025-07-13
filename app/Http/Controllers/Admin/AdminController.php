@@ -43,13 +43,13 @@ class AdminController extends Controller
                 'min:6',
             ],
         ]);
-        if($validator->fails()){
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+        if ($validator->fails()) {
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
+
         $data = $this->adminService->store($validator->validated());
         return response()->json([
             'status' => 200,

@@ -31,87 +31,91 @@ class OrderController extends Controller
         ]);
     }
 
-    public function store(Request $request){
-        $validator = Validator::make($request->all(), [
-            'category_ids' => 'required|array',
-            'category_ids.*' => 'exists:categories,id',
-            'category_package_ids' => 'required|array',
-            'category_package_ids.*' => 'exists:category_packages,id',
-            'customer_id' => 'required|exists:customers,id',
-            'order_type' => 'required|string|in:Prepaid,Postpaid',
-            'area' => 'required|string|max:255',
-            'house_no' => 'required|string|max:255',
-            'road_no' => 'required|string|max:255',
-            'block' => 'required|string|max:255',
-            'district' => 'required|string|max:255',
-            'additional_info' => 'nullable|string|max:500',
-            'order_amount' => 'required|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0',
-            'cupon' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:1000',
-            'date' => 'required|date|after_or_equal:today',
-            'slot' => 'required|string|max:255',
-            'status' => 'nullable|string|in:pending,processing,canceled,completed',
-        ]);
+    public function store(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'category_ids' => 'required|array',
+        'category_ids.*' => 'exists:categories,id',
+        'category_package_ids' => 'required|array',
+        'category_package_ids.*' => 'exists:category_packages,id',
+        'customer_id' => 'required|exists:customers,id',
+        'order_type' => 'required|string|in:Prepaid,Postpaid',
+        'area' => 'required|string|max:255',
+        'house_no' => 'required|string|max:255',
+        'road_no' => 'required|string|max:255',
+        'block' => 'required|string|max:255',
+        'district' => 'required|string|max:255',
+        'additional_info' => 'nullable|string|max:500',
+        'order_amount' => 'required|numeric|min:0',
+        'discount' => 'nullable|numeric|min:0',
+        'cupon' => 'nullable|string|max:255',
+        'description' => 'nullable|string|max:1000',
+        'date' => 'required|date|after_or_equal:today',
+        'slot' => 'required|string|max:255',
+        'status' => 'nullable|string|in:pending,processing,canceled,completed',
+    ]);
 
-        if($validator->fails()){
+    if ($validator->fails()) {
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
+        }
+
+    $orderData = $validator->validated();
+
+    if ($orderData['order_type'] === 'Prepaid') {
+        $customer = \App\Models\Customer::with('wallet')->find($orderData['customer_id']);
+
+        if (!$customer || $customer->wallet == null) {
             return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'status' => 404,
+                'message' => 'Wallet not found for this customer. Please create wallet first',
             ]);
         }
-        $orderData = $validator->validated();
 
-         $customer = \App\Models\Customer::with('wallet')->find($orderData['customer_id']);
+        $amount = $orderData['order_amount'] - ($orderData['discount'] ?? 0);
+        $walletBalance = $customer->wallet->balance;
+        $frozenBalance = $customer->wallet->frozen_balance;
+        $availableBalance = $walletBalance - $frozenBalance;
 
-    if (!$customer || $customer->wallet == null) {
-        return response()->json([
-            'status' => 404,
-            'message' => 'Wallet not found for this customer. Please create wallet first',
-        ]);
+        if ($availableBalance < $amount) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Insufficient wallet balance. Please add funds to Customer account.',
+            ]);
+        }
     }
 
-    $amount = $orderData['order_amount'] - ($orderData['discount'] ?? 0);
+    DB::beginTransaction();
 
-$walletBalance = $customer->wallet->balance;
-$frozenBalance = $customer->wallet->frozen_balance;
-$availableBalance = $walletBalance - $frozenBalance;
+    try {
+        $order = $this->orderService->store($orderData);
 
-if ($availableBalance < $amount) {
+        if ($order) {
+            $this->orderPackageService->store($orderData, $order->id);
+
+            if ($orderData['order_type'] === 'Prepaid') {
+                $customer->wallet->increment('frozen_balance', $amount);
+            }
+
+            DB::commit();
+        }
+    } catch (\Exception $e) {
+        DB::rollBack();
+        throw $e;
+    }
+
     return response()->json([
-        'status' => 403,
-        'message' => 'Insufficient wallet balance. Please add funds to Customer account.',
+        'status' => 200,
+        'message' => 'Order created successfully',
+        'data' => [
+            'order' => $order,
+        ],
+        'redirect_url' => 'order-list'
     ]);
 }
 
-
-
-        DB::beginTransaction();
-        try {
-            $order = $this->orderService->store($orderData);
-            if($order){
-                $order_package = $this->orderPackageService->store($orderData, $order->id);
-                $customer->wallet->increment('frozen_balance', $amount);
-
-                DB::commit();
-            }
-
-            } catch (\Exception $e) {
-                DB::rollBack();
-                throw $e;
-            }
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'order created successfully',
-            'data' => [
-                'order' => $order,
-                // 'order_package' => $order_package
-            ],
-        ]);
-
-    }
 
     public function orderDetail($id){
         $data = $this->orderService->orderDetail($id);
@@ -134,12 +138,11 @@ if ($availableBalance < $amount) {
 
         ]);
 
-        if($validator->fails()){
-            return response()->json([
-                'status' => 422,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ]);
+       if ($validator->fails()) {
+    return response()->json([
+        'message' => 'Validation failed',
+        'errors' => $validator->errors()
+    ], 422);
         }
         $orderData = $validator->validated();
         try {
