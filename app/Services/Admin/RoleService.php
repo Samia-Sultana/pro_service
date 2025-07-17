@@ -52,6 +52,8 @@ class RoleService implements RoleServiceInterface
                 'edit' => $group->contains('action', 'edit'),
                 'delete' => $group->contains('action', 'delete'),
                 'create' => $group->contains('action', 'create'),
+                'send_money' => $group->contains('action', 'send_money'),
+                'withdraw' => $group->contains('action', 'withdraw'),
             ];
         })->values()->toArray(); // Convert collection to array
 
@@ -82,10 +84,8 @@ class RoleService implements RoleServiceInterface
         $role->name = $data['name'];
         $role->save();
 
-        // Prepare data for syncing permissions with specific actions
         $permissionsData = [];
         foreach ($data['permissions'] as $permission) {
-            // For each action (read, create, edit, delete), find and set the enabled status
             if (!empty($permission['read'])) {
                 $permissionRecord = Permission::where('name', $permission['name'])->where('action', 'read')->first();
                 if ($permissionRecord) {
@@ -106,6 +106,20 @@ class RoleService implements RoleServiceInterface
             }
             if (!empty($permission['delete'])) {
                 $permissionRecord = Permission::where('name', $permission['name'])->where('action', 'delete')->first();
+                if ($permissionRecord) {
+                    $permissionsData[$permissionRecord->id] = ['enabled' => 1];
+                }
+            }
+
+             if (!empty($permission['send_money'])) {
+                $permissionRecord = Permission::where('name', $permission['name'])->where('action', 'send_money')->first();
+                if ($permissionRecord) {
+                    $permissionsData[$permissionRecord->id] = ['enabled' => 1];
+                }
+            }
+
+            if (!empty($permission['withdraw'])) {
+                $permissionRecord = Permission::where('name', $permission['name'])->where('action', 'withdraw')->first();
                 if ($permissionRecord) {
                     $permissionsData[$permissionRecord->id] = ['enabled' => 1];
                 }

@@ -72,6 +72,8 @@ class RoleController extends Controller
         'permissions.*.create' => 'boolean',
         'permissions.*.edit' => 'boolean',
         'permissions.*.delete' => 'boolean',
+        'permissions.*.send_money' => 'boolean',
+        'permissions.*.withdraw' => 'boolean',
         ]);
 
         if ($validator->fails()) {

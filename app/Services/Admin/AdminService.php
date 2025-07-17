@@ -32,6 +32,9 @@ class AdminService implements AdminServiceInterface
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
+        if (isset($data['roleId'])) {
+        $admin->roles()->sync([$data['roleId']]); // ensures only one role
+    }
         return $admin;
 
     }

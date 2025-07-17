@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Interfaces\Admin\AdminServiceInterface;
-use Illuminate\Http\Request;
 use Password;
 use Validator;
+use App\Models\Role;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Interfaces\Admin\AdminServiceInterface;
 
 
 class AdminController extends Controller
@@ -24,11 +25,14 @@ class AdminController extends Controller
         $search = $request->input('searchQuery');
 
         $data = $this->adminService->index($search);
+        $roles = Role::all();
 
         return response()->json([
             'status' => 200,
             'message' => 'Data retrieved successfully',
-            'data' => $data
+            'data' => $data,
+            'roles' => $roles
+
         ]);
     }
 
@@ -37,6 +41,7 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:225',
             'email' => 'required|email|unique:users,email',
+            'roleId' => 'required|exists:roles,id',
             'password' => [
                 'required',
                 'string',
