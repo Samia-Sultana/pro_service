@@ -39,7 +39,8 @@ class Order extends Model
     }
 
     public function experts(){
-        return $this->belongsToMany(Expert::class, 'expert_orders', 'order_id', 'expert_id');
+        return $this->belongsToMany(Expert::class, 'expert_orders', 'order_id', 'expert_id')
+        ->withPivot('status', 'payment_status', 'time', 'date', 'vendor_id', 'category_id');
     }
 
 

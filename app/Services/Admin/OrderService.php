@@ -22,7 +22,12 @@ class OrderService implements OrderServiceInterface
     }
     public function index($search = null)
     {
-        $query = $this->orderModel->with('customer');
+        $query = $this->orderModel->with([
+            'customer',
+            'experts' => function($query) {
+                $query->wherePivot('status', '!=', 'timedout');
+            }]
+        );
         if (!empty($search)) {
             foreach ($search as $field => $value) {
                 $query->where($field, 'like', '%' . $value . '%');
@@ -58,7 +63,14 @@ class OrderService implements OrderServiceInterface
     public function orderDetail($id)
     {
 
-        $order = $this->orderModel->with(['orderPackages.category', 'orderPackages.categoryPackage'])->where('id', '=', $id)->first();
+        $order = $this->orderModel->with([
+            'orderPackages.category',
+            'orderPackages.categoryPackage',
+            'experts' => function($query) {
+                $query->wherePivot('status', '!=', 'timedout');
+            }
+            ])
+            ->where('id', '=', $id)->first();
         return $order;
 
     }
