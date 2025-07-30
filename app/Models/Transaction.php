@@ -14,6 +14,7 @@ class Transaction extends Model
         'receiver_wallet_id',
         'description',
         'status',
+        'recipient_type', // 'expert' or 'admin'
 
     ];
 
