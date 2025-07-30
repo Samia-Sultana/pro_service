@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('expert_id')->constrained()->onDelete('cascade');
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->time('time');
+            $table->string('time');
             $table->date('date');
             $table->string('status')->default('pending');
             $table->string('payment_status')->default('pending');

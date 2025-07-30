@@ -51,23 +51,11 @@ class VendorIncomeController extends Controller
 
         $incomeAmount = $vendorIncome->income_amount * 0.10;
 
-        Income::create([10%
-    'income_amount' => $incomeAmount,
+        Income::create(
+    ['income_amount' => $incomeAmount,
     'order_id' => $vendorIncome->order_id,
     'status' => 'pending',
 ]);
 
-
-
-
-
-
-
-
-        return response()->json([
-            'status' => 200,
-            'message' => 'Income status updated successfully',
-            'data' => $vendorIncome
-        ]);
     }
 }

@@ -24,4 +24,9 @@ class ExpertOrder extends Model
     {
         return $this->belongsTo(Order::class);
     }
+
+    public function expert()
+    {
+        return $this->belongsTo(Expert::class);
+    }
 }

@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Carbon\Carbon;
 
 class ProcessCategoryWiseOrderJob implements ShouldQueue
 {
@@ -17,15 +18,29 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
 
     public $orderId;
     public $categoryId;
+    public $time;
+    public $date;
     public $packages;
     public $vendorIndex;
 
     public $timeout = 120;
 
-    public function __construct(int $orderId, int $categoryId, array $packages, int $vendorIndex = 0)
-    {
+    /**
+     * Create a new job instance.
+     */
+    public function __construct(
+        int $orderId,
+        string $time,
+        string $date,
+        int $categoryId,
+        array $packages,
+        int $vendorIndex = 0
+    ) {
         $this->orderId = $orderId;
+        $this->time = $time;
+        $this->date = Carbon::parse($date)->toDateString();
         $this->categoryId = $categoryId;
+
         $this->packages = $packages;
         $this->vendorIndex = $vendorIndex;  // Tracks which vendor to process next
     }
@@ -59,8 +74,15 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
         $orderRequest->update(['status' => 'timedout']);
 
         // Dispatch the job again for the next vendor
-        ProcessCategoryWiseOrderJob::dispatch($this->orderId, $this->categoryId, $this->packages, $this->vendorIndex + 1)
-            ->delay(now()->addMinute()); // Add a 1-minute delay before processing the next vendor
+        ProcessCategoryWiseOrderJob::dispatch(
+            $this->orderId,
+            $this->time,
+            $this->date,
+            $this->categoryId,
+
+            $this->packages,
+            $this->vendorIndex + 1
+        )->delay(now()->addMinute()); // Add a 1-minute delay before processing the next vendor
     }
 
     /**
@@ -71,6 +93,8 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
         return ExpertOrder::create([
             'order_id'    => $this->orderId,
             'category_id' => $this->categoryId,
+            'time'        => $this->time,
+            'date'        => $this->date,
             'status'      => 'pending',
             'vendor_id'   => $vendor->id,
         ]);
