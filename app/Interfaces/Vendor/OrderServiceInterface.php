@@ -10,7 +10,7 @@ interface OrderServiceInterface
     public function vendorIncome(int $id);
 
     public function assignExpert($expertOrderId, $expertId);
-    public function rescheduleOrder($expertOrderId, $date);
+    public function rescheduleOrder($expertOrderId, $date, $slot);
 
 
 

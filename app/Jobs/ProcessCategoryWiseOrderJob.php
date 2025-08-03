@@ -20,7 +20,7 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
     public $categoryId;
     public $time;
     public $date;
-    public $packages;
+    //public $packages;
     public $vendorIndex;
 
     public $timeout = 120;
@@ -33,7 +33,7 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
         string $time,
         string $date,
         int $categoryId,
-        array $packages,
+        //array $packages,
         int $vendorIndex = 0
     ) {
         $this->orderId = $orderId;
@@ -41,7 +41,7 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
         $this->date = Carbon::parse($date)->toDateString();
         $this->categoryId = $categoryId;
 
-        $this->packages = $packages;
+       // $this->packages = $packages;
         $this->vendorIndex = $vendorIndex;  // Tracks which vendor to process next
     }
 
@@ -80,7 +80,7 @@ class ProcessCategoryWiseOrderJob implements ShouldQueue
             $this->date,
             $this->categoryId,
 
-            $this->packages,
+           // $this->packages,
             $this->vendorIndex + 1
         )->delay(now()->addMinute()); // Add a 1-minute delay before processing the next vendor
     }

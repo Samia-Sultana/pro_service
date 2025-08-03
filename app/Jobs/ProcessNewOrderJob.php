@@ -43,7 +43,7 @@ class ProcessNewOrderJob implements ShouldQueue
         $groupedPackages = collect($order->orderPackages)->groupBy('category_id');
 
         foreach ($groupedPackages as $categoryId => $packages) {
-            ProcessCategoryWiseOrderJob::dispatch($order->id, $order->slot, $order->date, $categoryId, $packages->toArray());
+            ProcessCategoryWiseOrderJob::dispatch($order->id, $order->slot, $order->date, $categoryId);
         }
 
     }

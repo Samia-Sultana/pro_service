@@ -61,20 +61,19 @@ $vendorIncome = VendorIncome::where('order_id', $id)
 
     }
 
-    public function rescheduleOrder($expertOrderId, $datetime)
+    public function rescheduleOrder($expertOrderId, $date, $slot)
 {
 
-    $carbonDate = \Carbon\Carbon::parse($datetime);
+    $carbonDate = \Carbon\Carbon::parse($date);
 
     $date = $carbonDate->toDateString();
-    $time = $carbonDate->toTimeString();
 
     $expertOrder = $this->expertOrderModel->find($expertOrderId);
     if (!$expertOrder) {
         return response()->json(['message' => 'Order not found'], 404);
     }
     $expertOrder->date = $date;
-    $expertOrder->time = $time;
+    $expertOrder->time = $slot;
     $expertOrder->status = 'rescheduled';
     $expertOrder->save();
 

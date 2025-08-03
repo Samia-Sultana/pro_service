@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use DB;
+use Validator;
+use App\Models\Order;
+use App\Models\ExpertOrder;
+use App\Models\OrderPackage;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessCategoryWiseOrderJob;
 use App\Interfaces\Admin\OrderPackageInterface;
 use App\Interfaces\Admin\OrderServiceInterface;
-use DB;
-use Illuminate\Http\Request;
-use Validator;
 
 class OrderController extends Controller
 {
@@ -205,8 +209,85 @@ class OrderController extends Controller
 
     }
 
-    public function addService(Request $request)
-    {
-    logger()->info('Incoming service request:', $request->all());
+        public function addService(Request $request)
+        {
+
+$services =  $request->all();
+
+
+
+
+$validator = Validator::make($services, [
+        '*.order_id' => 'required|exists:orders,id',
+        '*.category_id' => 'required|exists:categories,id',
+        '*.category_package_id' =>
+            'required|exists:category_packages,id'
+            ,
+        '*.price' => 'required',
+        '*.discount' => 'required',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+
+    $validatedServices = $validator->validated();
+
+    $order = Order::find($validatedServices[0]['order_id']);
+
+foreach ($validatedServices as $service) {
+    // Check if the service already exists
+    $exists = OrderPackage::where([
+        'order_id' => $service['order_id'],
+        'category_id' => $service['category_id'],
+        'category_package_id' => $service['category_package_id']
+    ])->exists();
+
+    if (!$exists) {
+        // Create new order package if it doesn't exist
+        try {
+            $orderPackage = OrderPackage::create([
+                'order_id' => $service['order_id'],
+                'category_id' => $service['category_id'],
+                'category_package_id' => $service['category_package_id'],
+                'price' => $service['price'],
+                'discount' => $service['discount'],
+
+            ]);
+
+            $expertOrders = ExpertOrder::where([
+                    'order_id' => $service['order_id'],
+                    'category_id' => $service['category_id']
+            ])->where('status', '!=', 'timedout')->get();
+
+            $expertCount = $expertOrders->count();
+            if ($expertOrders->count() == 0) {
+                ProcessCategoryWiseOrderJob::dispatch($service['order_id'], $order->slot, $order->date, $service['category_id']);
+
+            }
+
+
+
+        } catch (\Exception $e) {
+            $results[] = [
+                'status' => 'error',
+                'data' => $service,
+                'message' => 'Failed to create service package: ' . $e->getMessage()
+            ];
+        }
+    } else {
+        $results[] = [
+            'status' => 'exists',
+            'data' => $service,
+            'message' => 'Service package already exists'
+        ];
+    }
+}
+    $results = [
+        'message' => 'Services processed successfully',
+    ];
     }
 }

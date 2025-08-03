@@ -2,25 +2,26 @@
 
 namespace App\Providers;
 
-use App\Interfaces\Vendor\VendorIncomeServiceInterface;
 use App\Models\Order;
+use App\Models\OrderPackage;
 use App\Observers\OrderObserver;
 use App\Services\Admin\RoleService;
 use App\Services\Admin\AdminService;
 use App\Services\Admin\OrderService;
 use App\Services\Admin\ExpertService;
 use App\Services\Admin\IncomeService;
-use App\Services\Vendor\VendorIncomeService;
 use App\Services\Admin\VendorService;
 use App\Services\Admin\ExpenseService;
+use App\Observers\OrderPackageObserver;
 use App\Services\Admin\CategoryService;
 use App\Services\Admin\CustomerService;
 use Illuminate\Support\ServiceProvider;
 use App\Services\Admin\PermissionService;
 use App\Services\Admin\ExpenseTypeService;
 use App\Services\Admin\SubcategoryService;
-use App\Services\Expert\ExpertIncomeService;
 use App\Services\Admin\OrderPackageService;
+use App\Services\Expert\ExpertIncomeService;
+use App\Services\Vendor\VendorIncomeService;
 use App\Services\Admin\CustomerWalletService;
 use App\Interfaces\Admin\RoleServiceInterface;
 use App\Services\Admin\CategoryPackageService;
@@ -39,11 +40,12 @@ use App\Interfaces\Admin\SubcategoryServiceInterface;
 
 
 use App\Interfaces\Expert\ExpertIncomeServiceInterface;
+use App\Interfaces\Vendor\VendorIncomeServiceInterface;
+
 use App\Interfaces\Admin\CustomerWalletServiceInterface;
-
 use App\Interfaces\Admin\CategoryPackageServiceInterface;
-use App\Services\Expert\OrderService as ExpertOrderService;
 
+use App\Services\Expert\OrderService as ExpertOrderService;
 use App\Services\Vendor\OrderService as VendorOrderService;
 use App\Services\Vendor\ExpertService as VendorExpertService;
 use App\Interfaces\Expert\OrderServiceInterface as ExpertOrderServiceInterface;
@@ -89,5 +91,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Order::observe(OrderObserver::class);
+       // OrderPackage::observe(OrderPackageObserver::class);
     }
 }
