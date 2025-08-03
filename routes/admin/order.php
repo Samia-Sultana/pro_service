@@ -11,6 +11,8 @@ Route::group(['middleware' => 'auth:user'], function(){
     Route::put('/order/update', [OrderController::class, 'update'])->name('order.update');
     Route::delete('/order/delete/{id}', [OrderController::class, 'destroy'])->name('order.destroy');
     Route::post('/order/status-update', [OrderController::class, 'updateOrderStatus']);
+    Route::post('/add/service', [OrderController::class, 'addService'])->name('order.addService');
+
 
 });
 

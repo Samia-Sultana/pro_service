@@ -205,4 +205,8 @@ class OrderController extends Controller
 
     }
 
+    public function addService(Request $request)
+    {
+    logger()->info('Incoming service request:', $request->all());
+    }
 }
