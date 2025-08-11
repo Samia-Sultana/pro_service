@@ -1,0 +1,141 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: proservice_backend
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - db
+    env_file: ./.env
+    networks:
+      - proservice
+    command: >
+      sh -c "
+        chown -R www-data:www-data storage bootstrap/cache &&
+        chmod -R 775 storage bootstrap/cache &&
+        php-fpm
+      "
+
+  artisan:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: proservice_artisan
+    working_dir: /var/www
+    entrypoint: [ "php", "artisan" ]
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - db
+    env_file: ./.env
+    networks:
+      - proservice
+
+  composer:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: proservice_composer
+    entrypoint: [ "composer" ]
+    env_file: ./.env
+    volumes:
+      - ./:/var/www
+
+  nginx:
+    image: nginx:latest
+    container_name: proservice_nginx
+    restart: unless-stopped
+    ports:
+      - "9001:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - proservice
+
+  db:
+    image: mysql:8.0
+    container_name: proservice_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      - proservice
+
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    command: php artisan migrate --force
+    container_name: proservice_migrate
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - backend
+      - db
+    env_file: ./.env
+    networks:
+      - proservice
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: proservice_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "9003:80"
+    networks:
+      - proservice
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: proservice_worker
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+    env_file: ./.env
+    networks:
+      - proservice
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    command: ["supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: proservice_scheduler
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+    env_file: ./.env
+    networks:
+      - proservice
+    command: ["supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+
+volumes:
+  mysqldata:
+
+networks:
+  proservice:
+    driver: bridge
