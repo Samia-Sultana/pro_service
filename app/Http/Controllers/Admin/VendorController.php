@@ -34,7 +34,7 @@ class VendorController extends Controller
             'email' => 'required|email|unique:vendors,email',
             'phone' => 'required|numeric|unique:vendors,phone',
             'nid_number' => 'required|numeric|unique:vendors,nid_number',
-            'service_status' => 'required|in:pending,verified,blocked',
+            'service_status' => 'required|in:pending,active,blocked',
             'login_status' => 'required|in:pending,active,blocked',
             'vendor_photo' => [
                 'image',
@@ -82,7 +82,7 @@ class VendorController extends Controller
             'nid_number' => [
                 'required', 'numeric', Rule::unique('vendors', 'nid_number')->ignore($request->id),
             ],
-            'service_status' => 'required|in:pending,verified,blocked',
+            'service_status' => 'required|in:pending,active,blocked',
             'login_status' => 'required|in:pending,active,blocked',
             'vendor_photo' => [
                 'nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048',
