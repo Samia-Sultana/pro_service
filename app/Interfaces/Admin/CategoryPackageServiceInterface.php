@@ -6,6 +6,8 @@ interface CategoryPackageServiceInterface
 {
 
 public function index(array $categories = []);
+
+public function allPackage();
 public function store(array $data);
 public function packageDetail(int $id);
 public function edit(array $data);

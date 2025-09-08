@@ -2,8 +2,9 @@
 
 namespace App\Services\Admin;
 
-use App\Interfaces\Admin\CategoryPackageServiceInterface;
+use App\Helpers\ImageHelper;
 use App\Models\CategoryPackage;
+use App\Interfaces\Admin\CategoryPackageServiceInterface;
 
 class CategoryPackageService implements CategoryPackageServiceInterface
 {
@@ -22,8 +23,16 @@ class CategoryPackageService implements CategoryPackageServiceInterface
         //     }
         // }
         if(!empty($categories)){
-            $query->whereIn('category_id', $categories);        }
+            $query->whereIn('category_id', $categories);
+        }
 
+
+        return $query->paginate(10);
+    }
+
+    public function allPackage()
+    {
+        $query  = $this->categoryPackageModel->query();
         return $query->paginate(10);
     }
     public function store(array $data)
@@ -31,8 +40,12 @@ class CategoryPackageService implements CategoryPackageServiceInterface
         $query  = $this->categoryPackageModel->query();
         $package = $query->create([
             'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
+            'tag' => $data['tag'],
+            'category_id' => $data['category_id'] ?? null,
+            'description' => $data['description'],
+            'image' => $data['image'] ?? null,
+            'price' => $data['price'],
+            'discount' => $data['discount'] ?? null,
         ]);
         return $package;
 
@@ -48,6 +61,19 @@ class CategoryPackageService implements CategoryPackageServiceInterface
 
     public function edit(array $data)
     {
+        $query  = $this->categoryPackageModel->query();
+        $data['image'] = ImageHelper::processImage($data['image'] ?? null, 'package_photos');
+        $package = $query->find($data['id']);
+        $package->name = $data['name'];
+        $package->tag = $data['tag'];
+        $package->category_id = $data['category_id'];
+        $package->description = $data['description'];
+        $package->price = $data['price'];
+        $package->discount = $data['discount'];
+        $package->image = $data['image'];
+        $package->save();
+
+        return $package;
 
     }
 
